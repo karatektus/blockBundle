@@ -88,8 +88,8 @@ var textBlockBootBox = function () {
 
             imageblock.on('dblclick taphold', function () {
                 _self.form(this, function (result) {
-                    imageblock.attr('src', result);
                     bootbox.hideAll();
+                    location.reload();
                 });
 
                 return false;

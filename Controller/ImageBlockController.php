@@ -7,6 +7,7 @@ use Pluetzner\BlockBundle\Form\ImageBlockFormType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeExtensionGuesser;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -114,8 +115,28 @@ class ImageBlockController extends Controller
             $manager->persist($imageblock);
             $manager->flush();
 
-            return new Response(sprintf('data:%s;base64,%s', $imageblock->getMimeType(), $imageblock->getImage()));
+            $guesser = new MimeTypeExtensionGuesser();
+            $imageRoute = $this->get('router')->generate('pluetzner_block_image_show', [
+                'slug' => $imageblock->getSlug(),
+                'height' => 0,
+                'width' => 0,
+                '_type' => $guesser->guess($imageblock->getMimeType())
+
+            ]);
+
+            $dir = dirname(sprintf('%s/../web%s', $this->get('kernel')->getRootDir(), $imageRoute));
+            $files = scandir($dir);
+            foreach($files as $file){
+                $fp = sprintf('%s/%s', $dir, $file);
+                if(is_file($fp)) {
+                    $res = unlink($fp); //delete file
+                }
+            }
+
+            return new Response("");
         }
+
+
 
         return [
             'form' => $form->createView(),

@@ -97,7 +97,7 @@ class BlockExtension extends \Twig_Extension
     {
         return [
             new \Twig_SimpleFunction('imageblock', [$this, 'getImageBlock'], ['is_safe' => ['html']]),
-            new \Twig_SimpleFunction('textblock', [$this, 'getTextBlock'], ['is_safe'  => ['html']]),
+            new \Twig_SimpleFunction('textblock', [$this, 'getTextBlock'], ['is_safe' => ['html']]),
         ];
     }
 
@@ -105,10 +105,11 @@ class BlockExtension extends \Twig_Extension
      * @param $slug
      * @return string
      */
-    public function getTextBlock($slug){
+    public function getTextBlock($slug)
+    {
         $textblock = $this->getDoctrine()->getRepository(TextBlock::class)->findOneBy(['slug' => $slug]);
 
-        if(null === $textblock){
+        if (null === $textblock) {
             $textblock = new TextBlock();
             $textblock
                 ->setSlug($slug)
@@ -119,9 +120,8 @@ class BlockExtension extends \Twig_Extension
         }
 
 
-
         $editData = '"';
-        if($this->getTwig()->isGranted('ROLE_ADMIN')){
+        if ($this->getTwig()->isGranted('ROLE_ADMIN')) {
             $route = $this->getRouter()->generate('pluetzner_block_textblock_editajax', ['id' => $textblock->getId()]);
             $editData = sprintf(' textblock" data-href="%s"', $route);
         }
@@ -163,12 +163,66 @@ class BlockExtension extends \Twig_Extension
 
         ]);
 
+        $imagePath = sprintf('%s/../web%s', $this->getRootdir(), $imageRoute);
+        if (false === file_exists($imagePath)) {
+            $this->resizeImage(imagecreatefromstring(base64_decode($imageBlock->getImage())), $imageBlock->getMimeType(), $width, $height, $imagePath);
+        }
+
         $editData = '"';
-        if($this->getTwig()->isGranted('ROLE_ADMIN')){
+        if ($this->getTwig()->isGranted('ROLE_ADMIN')) {
             $route = $this->getRouter()->generate('pluetzner_block_imageblock_editajax', ['id' => $imageBlock->getId()]);
             $editData = sprintf(' imageblock" data-href="%s"', $route);
         }
 
         return sprintf('<img class="%s src="%s">', $editData, $imageRoute);
+    }
+
+    /**
+     * Resize an image and copy it
+     *
+     * @param resource $src_img
+     * @param string $mimeType
+     * @param int $new_width
+     * @param int $new_height
+     * @param string $moveTo
+     */
+    private function resizeImage($src_img, $mimeType, $new_width, $new_height, $moveTo)
+    {
+        $old_x = imageSX($src_img);
+        $old_y = imageSY($src_img);
+
+        if (0 === $new_height) {
+            $new_height = $old_y;
+        }
+        if (0 === $new_width) {
+            $new_width = $old_x;
+        }
+
+        if ($old_x > $old_y) {
+            $thumb_w = $new_width;
+            $thumb_h = $old_y / $old_x * $new_width;
+        } elseif ($old_x < $old_y) {
+            $thumb_w = $old_x / $old_y * $new_height;
+            $thumb_h = $new_height;
+        } else {
+            $thumb_w = $new_width;
+            $thumb_h = $new_height;
+        }
+
+        $dst_img = ImageCreateTrueColor($thumb_w, $thumb_h);
+
+        imagecopyresampled($dst_img, $src_img, 0, 0, 0, 0, $thumb_w, $thumb_h, $old_x, $old_y);
+
+        if (!file_exists(dirname($moveTo))) {
+            mkdir(dirname($moveTo));
+        }
+        if ($mimeType == 'image/png') {
+            $result = imagepng($dst_img, $moveTo, 8);
+        } elseif ($mimeType == 'image/jpg' || $mimeType == 'image/jpeg' || $mimeType == 'image/pjpeg') {
+            $result = imagejpeg($dst_img, $moveTo, 80);
+        }
+
+        imagedestroy($dst_img);
+        imagedestroy($src_img);
     }
 }

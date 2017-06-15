@@ -21,8 +21,12 @@
           type="text/css"/>
 
 
+    {% block stylesheets %}
+        {% stylesheets '@PluetznerBlockBundle/Resources/public/css/*' filter='cssrewrite' %}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
+        {% endstylesheets %}
+    {% endblock %}
 
-    {% block style %}{% endblock %}
 
 </head>
 
@@ -80,8 +84,17 @@
 
 
 </div>
+<div class="scroll-to-top" style="display: none;">
+    {{ "arrow-up"|icon }}
+</div>
 
-{% block javascript %}{% endblock %}
+{% javascripts
+"@PluetznerBlockBundle/Resources/public/js/*"
+output='/compiled/js/core.js' %}
+
+<script src="{{ asset_url }}" type="text/javascript"></script>
+{% endjavascripts %}
+
 
 <script type="text/javascript">
     $(document).ready(function () {
