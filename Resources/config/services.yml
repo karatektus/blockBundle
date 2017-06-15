@@ -31,3 +31,7 @@ services:
         arguments: ['@doctrine', '@router', '%kernel.root_dir%', '@twig.extension.security']
         tags:
             - { name: twig.extension }
+    pluetzner_block.twig.icon_extension:
+        class: Pluetzner\BlockBundle\Twig\IconExtension
+        tags:
+            - { name: twig.extension }
