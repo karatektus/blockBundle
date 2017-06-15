@@ -26,12 +26,12 @@ services:
             - [ setLocales, [%locales%] ]
         tags:
             - { name: form.type }
+    pluetzner_block.twig.icon_extension:
+        class: Pluetzner\BlockBundle\Twig\IconExtension
+        tags:
+            - { name: twig.extension }
     pluetzner_block.twig.block_extension:
         class: Pluetzner\BlockBundle\Twig\BlockExtension
         arguments: ['@doctrine', '@router', '%kernel.root_dir%', '@twig.extension.security']
-        tags:
-            - { name: twig.extension }
-    pluetzner_block.twig.icon_extension:
-        class: Pluetzner\BlockBundle\Twig\IconExtension
         tags:
             - { name: twig.extension }

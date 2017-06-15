@@ -13,7 +13,10 @@
     <meta content="" name="description"/>
     <meta content="" name="author"/>
 
-    <link rel="shortcut icon" href="{{ asset("bundles/admin/img/favicon.ico") }}"/>
+    {% image '@PluetznerBlockBundle/Resources/img/favicon.ico' %}
+    <link rel="shortcut icon" href="{{ asset_url }}"/>
+    {% endimage %}
+
 
     <title>{% block title %}{% endblock %}Portfolio</title>
 
@@ -30,52 +33,46 @@
 
 </head>
 
-<body class="page-container-bg-solid page-sidebar-closed-hide-logo {% block body_class %}{% endblock %}">
+<body>
 
 {% include "@PluetznerBlock/_layout/app_header.html.twig" %}
 
-<div class="page-container">
-    <div class="page-content-wrapper">
-        {% block page_container %}
+<div class="container">
 
-            {% block body_section %}
-                {% block header %}
-                    <div class="page-head">
-                        <div class="container">
-                            <div class="page-title">
-                                <h1>{% block h1 %}{% endblock %}</h1>
-                            </div>
-                            <div class="page-toolbar">{% block toolbar %}{% endblock %}</div>
-                        </div>
+    {% block body_section %}
+        {% block header %}
+            <div class="page-head">
+                <div class="container">
+                    <div class="page-title">
+                        <h1>{% block h1 %}{% endblock %}</h1>
                     </div>
-
-                {% endblock header %}
-                <div class="page-content">
-
-
-                    <div class="container">
-                        {% block messages %}
-                            {% set messages = app.session.flashBag.keys() %}
-                            {% if messages %}
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        {% for type in messages %}
-                                            <div class="note note-{% if 'error' == type %}danger{% else %}{{ type }}{% endif %}">{{ app.session.flashBag.get(type)|join(' ') }}</div>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            {% endif %}
-                        {% endblock %}
-                        {% block body %}
-                        {% endblock %}
-                    </div>
-
+                    <div class="page-toolbar">{% block toolbar %}{% endblock %}</div>
                 </div>
-            {% endblock body_section %}
-        {% endblock %}
-    </div>
+            </div>
+
+        {% endblock header %}
+        <div class="page-content">
 
 
+            <div class="container">
+                {% block messages %}
+                    {% set messages = app.session.flashBag.keys() %}
+                    {% if messages %}
+                        <div class="row">
+                            <div class="col-md-12">
+                                {% for type in messages %}
+                                    <div class="note note-{% if 'error' == type %}danger{% else %}{{ type }}{% endif %}">{{ app.session.flashBag.get(type)|join(' ') }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endblock %}
+                {% block body %}
+                {% endblock %}
+            </div>
+
+        </div>
+    {% endblock body_section %}
 </div>
 <div class="page-footer">
     <div class="container">
@@ -89,7 +86,10 @@
 </div>
 
 {% javascripts
-"@PluetznerBlockBundle/Resources/public/js/*"
+"@PluetznerBlockBundle/Resources/public/js/jquery-3.2.1.min.js"
+"@PluetznerBlockBundle/Resources/public/js/bootstrap.min.js"
+"@PluetznerBlockBundle/Resources/public/js/bootbox.min.js"
+"@PluetznerBlockBundle/Resources/public/js/editor.js"
 output='/compiled/js/core.js' %}
 
 <script src="{{ asset_url }}" type="text/javascript"></script>

@@ -76,6 +76,7 @@ var blockBootBox = function () {
             var _self = this;
             var textblock = $('.textblock');
             var imageblock = $('.imageblock');
+            var buttonblock = $('.buttonblock');
 
             textblock.on('dblclick taphold', function () {
                 var currentBlock = this;
@@ -95,6 +96,10 @@ var blockBootBox = function () {
 
                 return false;
             }).removeClass('disabled');
+
+            buttonblock.click(function () {
+                $("."+$(this).data('slug')).first().dblclick();
+            })
         }
     };
 
