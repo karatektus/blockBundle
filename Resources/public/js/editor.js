@@ -1,4 +1,4 @@
-var textBlockBootBox = function () {
+var blockBootBox = function () {
     "use strict";
 
     return {
@@ -78,8 +78,9 @@ var textBlockBootBox = function () {
             var imageblock = $('.imageblock');
 
             textblock.on('dblclick taphold', function () {
-                _self.form(this, function (result) {
-                    textblock.text(result);
+                var currentBlock = this;
+                _self.form(currentBlock, function (result) {
+                    $(currentBlock).text(result);
                     bootbox.hideAll();
                 });
 
@@ -101,5 +102,5 @@ var textBlockBootBox = function () {
 
 
 $(document).ready(function () {
-    textBlockBootBox.init();
+    blockBootBox.init();
 });
