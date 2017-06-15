@@ -1,0 +1,55 @@
+{% extends '@Admin/_layout/base.html.twig' %}
+{% block h1 %}
+    Benutzer
+    <small>Übersicht</small>
+{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="portlet light">
+                <div class="portlet-title tabbable-line">
+                    <div class="caption caption-md">
+                            <span class="caption-subject font-blue-hoki bold uppercase">
+                            Benutzer
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="portlet-body">
+                    <table class="table-striped table-hover table">
+                        <thead>
+                        <tr>
+                            <th{% if pagination.isSorted('u.username') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(pagination, 'Username', 'u.username') }}</th>
+                            <th>Rolle</th>
+                            <th class="text-right">Optionen</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for user in pagination %}
+                            <tr>
+                                <td>
+                                    <a href="{{ path('admin_user_show', {'id': user.id}) }}">{{ user.username }}</a>
+                                </td>
+                                <td>{{ user.function }}</td>
+                                <td class="text-right">
+                                    <a href="{{ path("admin_user_edit_1", {"id":user.id}) }}"
+                                       class="text-warning">{{ 'edit'|icon }}
+                                        Bearbeiten</a>
+                                    <a href="{{ path("admin_user_delete", {"id":user.id}) }}"
+                                       class="text-danger">{{ 'trash'|icon }}
+                                        Löschen</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <a class="btn btn-primary" href="{{ path("admin_user_edit") }}">+ Hinzufügen</a>
+                    <div class="navigation">
+                        {{ knp_pagination_render(pagination) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

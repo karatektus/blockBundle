@@ -1,0 +1,42 @@
+{% extends '@PluetznerBlock/_layout/base.html.twig' %}
+{% block h1 %}
+    Dashboard
+{% endblock %}
+
+{% block messages %}
+    {% set messages = app.session.flashBag.keys() %}
+    {% if messages %}
+        <div class="row">
+            <div class="col-md-12">
+                {% for type in messages %}
+                    <div class="note note-{% if 'error' == type %}danger{% else %}{{ type }}{% endif %}">{{ app.session.flashBag.get(type) |join(' ') | raw }}</div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption caption-md">
+                        title
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    body
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+{% endblock %}
+
+    {% block javascript %}
+        {{ parent() }}
+    {% endblock %}

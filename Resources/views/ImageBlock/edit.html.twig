@@ -1,0 +1,33 @@
+{% extends '@PluetznerBlock/_layout/base.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="portlet light">
+                <div class="portlet-title tabbable-line">
+                    <div class="caption caption-md">
+                            <span class="caption-subject font-blue-hoki bold uppercase">
+                            Imageblocks
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="portlet-body">
+
+                    {{ form(form, {'style': 'horizontal'}) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block h1 %}
+    Imageblock
+    {% if imageblock.id %}
+        <small>Bearbeiten</small>
+    {% else %}
+        <small>Erstellen</small>
+    {% endif %}
+{% endblock %}
+

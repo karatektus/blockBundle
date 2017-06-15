@@ -1,0 +1,39 @@
+<!-- BEGIN HEADER -->
+<div class="page-header">
+    <!-- BEGIN HEADER TOP -->
+    <div class="page-header-top">
+        <div class="container">
+            <!-- BEGIN LOGO -->
+            <div class="page-logo">
+                <a href="{{ path('pluetzner_block_default_index') }}">
+                    <img height="60" src="{{ asset("bundles/app/img/header_logo.png") }}" alt="logo" class="logo-default">
+                </a>
+            </div>
+            <!-- END LOGO -->
+            <!-- BEGIN RESPONSIVE MENU TOGGLER -->
+            <a href="javascript:;" class="menu-toggler"></a>
+            <!-- END RESPONSIVE MENU TOGGLER -->
+            <!-- BEGIN TOP NAVIGATION MENU -->
+            <div class="top-menu">
+               {{ knp_menu_render('nav', { 'style': 'navbar-right' }) }}
+            </div>
+            <!-- END TOP NAVIGATION MENU -->
+        </div>
+    </div>
+    <!-- END HEADER TOP -->
+    <!-- BEGIN HEADER MENU -->
+    <div class="page-header-menu">
+        <div class="container">
+            <!-- BEGIN MEGA MENU -->
+            <!-- DOC: Apply "hor-menu-light" class after the "hor-menu" class below to have a horizontal menu with white background -->
+            <div class="hor-menu">
+                {{ knp_menu_render("main", { 'style': 'navbar' }) }}
+            </div>
+            <!-- DOC: Remove data-hover="dropdown" and data-close-others="true" attributes below to disable the dropdown opening on mouse hover -->
+            <!-- END MEGA MENU -->
+
+            <!-- BEGIN HEADER SEARCH BOX -->
+        </div>
+    </div>
+    <!-- END HEADER MENU -->
+</div>

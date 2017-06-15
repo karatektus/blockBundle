@@ -1,0 +1,55 @@
+{% extends '@PluetznerBlock/_layout/base.html.twig' %}
+{% block h1 %}
+    Imageblock
+    <small>Übersicht</small>
+{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="portlet light">
+                <div class="portlet-title tabbable-line">
+                    <div class="caption caption-md">
+                            <span class="caption-subject font-blue-hoki bold uppercase">
+                            Imageblocks
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="portlet-body">
+                    <table class="table-striped table-hover table">
+                        <thead>
+                        <tr>
+                            <th>Slug</th>
+                            <th>Image</th>
+                            <th class="text-right">Optionen</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for imageblock in pagination %}
+                            <tr>
+                                <td>
+                                    {{ imageblock.slug }}
+                                </td>
+                                <td>{{ imageblock(imageblock.slug, 0, 100) }}</td>
+                                <td class="text-right">
+                                    <a href="{{ path("pluetzner_block_imageblock_edit_1", {"id":imageblock.id}) }}"
+                                       class="text-warning">{{ 'edit'|icon }}
+                                        Bearbeiten</a>
+                                    <a href="{{ path("pluetzner_block_imageblock_delete", {"id":imageblock.id}) }}"
+                                       class="text-danger">{{ 'trash'|icon }}
+                                        Löschen</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <a class="btn btn-primary" href="{{ path("pluetzner_block_imageblock_edit") }}">+ Hinzufügen</a>
+                    <div class="navigation">
+                        {{ knp_pagination_render(pagination) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

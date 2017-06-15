@@ -1,0 +1,44 @@
+{% extends '@Admin/_layout/base.html.twig' %}
+{% block h1 %}
+    Benutzer
+    <small>Benutzerdaten</small>
+{% endblock %}
+
+{% block body %}
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="portlet light">
+                    <div class="portlet-title tabbable-line">
+                        <div class="caption caption-md">
+                            <span class="caption-subject font-blue-hoki bold uppercase">
+                            {{ user.username }}
+                        </span>
+                        </div>
+                        <div class="actions">
+                            <a class="btn btn-circle btn-icon-only btn-default"
+                               href="{{ path("admin_user_edit_1", {"id":user.id}) }}"
+                               class="text-warning">{{ 'edit'|icon }}
+                            </a>
+                            </a>
+                        </div>
+
+                    </div>
+
+                    <div class="portlet-body">
+                        <table class="table-striped table-hover table">
+                            <tbody>
+                            <tr>
+                                <th class="text-right">Passwort</th>
+                                <td><a href="{{ path("admin_user_editpassword") }}">Jetzt ändern &raquo;</a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+{% endblock %}
+
