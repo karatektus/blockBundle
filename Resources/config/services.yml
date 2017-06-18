@@ -32,6 +32,13 @@ services:
             - { name: twig.extension }
     pluetzner_block.twig.block_extension:
         class: Pluetzner\BlockBundle\Twig\BlockExtension
-        arguments: ['@doctrine', '@router', '%kernel.root_dir%', '@twig.extension.security']
+        arguments: [
+            '@doctrine',
+            '@router',
+            '%kernel.root_dir%',
+            '@twig.extension.security',
+            '@knp_paginator',
+            '@request_stack'
+          ]
         tags:
             - { name: twig.extension }

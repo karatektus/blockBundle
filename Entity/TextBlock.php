@@ -48,6 +48,13 @@ class TextBlock
     private $locale;
 
     /**
+     * @var EntityBlock
+     *
+     * @ORM\ManyToOne(targetEntity="Pluetzner\BlockBundle\Entity\EntityBlock", inversedBy="textBlocks")
+     */
+    private $entityBlock;
+
+    /**
      * WTF? just for the form type - ignore it!
      */
     public $Speichern;
@@ -108,6 +115,25 @@ class TextBlock
     public function setLocale($locale)
     {
         $this->locale = $locale;
+    }
+
+    /**
+     * @return EntityBlock
+     */
+    public function getEntityBlock()
+    {
+        return $this->entityBlock;
+    }
+
+    /**
+     * @param EntityBlock $entityBlock
+     *
+     * @return $this
+     */
+    public function setEntityBlock($entityBlock)
+    {
+        $this->entityBlock = $entityBlock;
+        return $this;
     }
 }
 

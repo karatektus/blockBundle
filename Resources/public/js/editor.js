@@ -77,6 +77,7 @@ var blockBootBox = function () {
             var textblock = $('.textblock');
             var imageblock = $('.imageblock');
             var buttonblock = $('.buttonblock');
+            var addentity = $('.addEntityButtonBlock');
 
             textblock.on('dblclick taphold', function () {
                 var currentBlock = this;
@@ -99,7 +100,15 @@ var blockBootBox = function () {
 
             buttonblock.click(function () {
                 $("."+$(this).data('slug')).first().dblclick();
-            })
+            });
+
+            addentity.click(function () {
+                var currentBlock = this;
+                _self.form(this, function (result) {
+                    bootbox.hideAll();
+                    location.reload();
+                });
+            });
         }
     };
 

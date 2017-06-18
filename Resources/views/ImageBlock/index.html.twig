@@ -26,17 +26,17 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for imageblock in pagination %}
+                        {% for image in pagination %}
                             <tr>
                                 <td>
-                                    {{ imageblock.slug }}
+                                    {{ image.slug }}
                                 </td>
-                                <td>{{ imageblock(imageblock.slug, 0, 100) }}</td>
+                                <td>{{ imageBlock(image.slug, 100, 100) }}</td>
                                 <td class="text-right">
-                                    <a href="{{ path("pluetzner_block_imageblock_edit_1", {"id":imageblock.id}) }}"
+                                    <a href="{{ path("pluetzner_block_imageblock_edit_1", {"id":image.id}) }}"
                                        class="text-warning">{{ 'edit'|icon }}
                                         Bearbeiten</a>
-                                    <a href="{{ path("pluetzner_block_imageblock_delete", {"id":imageblock.id}) }}"
+                                    <a href="{{ path("pluetzner_block_imageblock_delete", {"id":image.id}) }}"
                                        class="text-danger">{{ 'trash'|icon }}
                                         Löschen</a>
                                 </td>

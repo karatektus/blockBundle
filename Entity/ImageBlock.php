@@ -46,6 +46,12 @@ class ImageBlock extends ImageBlockModel
      */
     private $mimeType;
 
+    /**
+     * @var EntityBlock
+     *
+     * @ORM\ManyToOne(targetEntity="Pluetzner\BlockBundle\Entity\EntityBlock", inversedBy="imageBlocks")
+     */
+    private $entityBlock;
 
     /**
      * Get id
@@ -129,6 +135,25 @@ class ImageBlock extends ImageBlockModel
     public function setMimeType($mimeType)
     {
         $this->mimeType = $mimeType;
+        return $this;
+    }
+
+    /**
+     * @return EntityBlock
+     */
+    public function getEntityBlock()
+    {
+        return $this->entityBlock;
+    }
+
+    /**
+     * @param EntityBlock $entityBlock
+     *
+     * @return $this
+     */
+    public function setEntityBlock($entityBlock)
+    {
+        $this->entityBlock = $entityBlock;
         return $this;
     }
 }

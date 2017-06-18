@@ -39,48 +39,27 @@
 
 <div class="container">
 
-    {% block body_section %}
-        {% block header %}
-            <div class="page-head">
-                <div class="container">
-                    <div class="page-title">
-                        <h1>{% block h1 %}{% endblock %}</h1>
-                    </div>
-                    <div class="page-toolbar">{% block toolbar %}{% endblock %}</div>
+    {% block messages %}
+        {% set messages = app.session.flashBag.keys() %}
+        {% if messages %}
+            <div class="row">
+                <div class="col-md-12">
+                    {% for type in messages %}
+                        <div class="note note-{% if 'error' == type %}danger{% else %}{{ type }}{% endif %}">{{ app.session.flashBag.get(type)|join(' ') }}</div>
+                    {% endfor %}
                 </div>
             </div>
+        {% endif %}
+    {% endblock %}
+    {% block body %}
+    {% endblock %}
 
-        {% endblock header %}
-        <div class="page-content">
-
-
-            <div class="container">
-                {% block messages %}
-                    {% set messages = app.session.flashBag.keys() %}
-                    {% if messages %}
-                        <div class="row">
-                            <div class="col-md-12">
-                                {% for type in messages %}
-                                    <div class="note note-{% if 'error' == type %}danger{% else %}{{ type }}{% endif %}">{{ app.session.flashBag.get(type)|join(' ') }}</div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% endif %}
-                {% endblock %}
-                {% block body %}
-                {% endblock %}
-            </div>
-
-        </div>
-    {% endblock body_section %}
 </div>
-<div class="page-footer">
+<footer class="navbar-fixed-bottom">
     <div class="container">
         <div class="page-footer-inner"> 2017 © Paul Lützner</div>
     </div>
-
-
-</div>
+</footer>
 <div class="scroll-to-top" style="display: none;">
     {{ "arrow-up"|icon }}
 </div>

@@ -27,7 +27,7 @@ class ImageBlockController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $imageblocks = $this->getDoctrine()->getRepository(ImageBlock::class)->findBy(['deleted' => false]);
+        $imageblocks = $this->getDoctrine()->getRepository(ImageBlock::class)->findBy(['deleted' => false, 'entityBlock' => null]);
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(

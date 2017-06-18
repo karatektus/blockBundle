@@ -8,12 +8,16 @@
 
 namespace Pluetzner\BlockBundle\Twig;
 
+use Knp\Component\Pager\Paginator;
+use Pluetzner\BlockBundle\Entity\EntityBlock;
+use Pluetzner\BlockBundle\Entity\EntityBlockType;
 use Pluetzner\BlockBundle\Entity\ImageBlock;
 use Pluetzner\BlockBundle\Entity\TextBlock;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Bridge\Twig\Extension\SecurityExtension;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeExtensionGuesser;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Class BlockExtension
@@ -43,6 +47,16 @@ class BlockExtension extends \Twig_Extension
     private $twig;
 
     /**
+     * @var Paginator
+     */
+    private $paginator;
+
+    /**
+     * @var RequestStack
+     */
+    private $request;
+
+    /**
      * BlockExtension constructor.
      *
      * @param RegistryInterface $doctrine
@@ -50,12 +64,14 @@ class BlockExtension extends \Twig_Extension
      * @param string $rootdir
      * @param SecurityExtension $twig
      */
-    public function __construct(RegistryInterface $doctrine, Router $router, $rootdir = '', SecurityExtension $twig)
+    public function __construct(RegistryInterface $doctrine, Router $router, $rootdir = '', SecurityExtension $twig, Paginator $paginator, RequestStack $requestStack)
     {
         $this->doctrine = $doctrine;
         $this->router = $router;
         $this->rootdir = $rootdir;
         $this->twig = $twig;
+        $this->paginator = $paginator;
+        $this->request = $requestStack;
     }
 
     /**
@@ -91,28 +107,70 @@ class BlockExtension extends \Twig_Extension
     }
 
     /**
+     * @return Paginator
+     */
+    public function getPaginator()
+    {
+        return $this->paginator;
+    }
+
+    /**
+     * @return RequestStack
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
      * @return array
      */
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('imageblock', [$this, 'getImageBlock'], ['is_safe' => ['html']]),
-            new \Twig_SimpleFunction('textblock', [$this, 'getTextBlock'], ['is_safe' => ['html']]),
-            new \Twig_SimpleFunction('buttonblock', [$this, 'getButtonBlock'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('imageBlock', [$this, 'getImageBlock'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('textBlock', [$this, 'getTextBlock'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('buttonBlock', [$this, 'getButtonBlock'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('entityBlocks', [$this, 'getEntityBlocks']),
         ];
     }
 
     /**
      * @param $slug
+     * @param EntityBlock $entityBlock
      * @return string
      */
-    public function getTextBlock($slug)
+    public function getTextBlock($slug, $entityBlock = null)
     {
+        if (null !== $entityBlock) {
+            $oldslug = $slug;
+            $slug = sprintf('%s_%s_%s', $entityBlock->getEntityBlockType()->getSlug(), $entityBlock->getId(), $slug);
+        }
+
         $textblock = $this->getDoctrine()->getRepository(TextBlock::class)->findOneBy(['slug' => $slug]);
 
         if (null === $textblock) {
+
+            if (null !== $entityBlock) {
+                $type = $entityBlock->getEntityBlockType();
+                $blocks = $type->getTextBlocks();
+                $exists = false;
+                foreach ($blocks as $block) {
+                    if ($oldslug === $block['name']) {
+                        $exists = true;
+                    }
+                }
+
+                if (false === $exists) {
+                    $blocks[] = ['name' => $oldslug];
+                    $type->setTextBlocks($blocks);
+                    $this->getDoctrine()->getManager()->persist($type);
+                }
+            }
+
             $textblock = new TextBlock();
             $textblock
+                ->setEntityBlock($entityBlock)
                 ->setSlug($slug)
                 ->setText('No such Textblock');
 
@@ -134,19 +192,44 @@ class BlockExtension extends \Twig_Extension
      * @param string $slug
      * @param int $width
      * @param int $height
+     * @param EntityBlock|null $entityBlock
      *
      * @return string
      */
-    public function getImageBlock($slug, $width = 0, $height = 0)
+    public function getImageBlock($slug, $width = 0, $height = 0, $entityBlock = null)
     {
+        if (null !== $entityBlock) {
+            $oldslug = $slug;
+            $slug = sprintf('%s_%s_%s', $entityBlock->getEntityBlockType()->getSlug(), $entityBlock->getId(), $slug);
+        }
+
         $imageBlock = $this->getDoctrine()->getRepository(ImageBlock::class)->findOneBy(['slug' => $slug]);
 
         if (null === $imageBlock) {
-            $path = $this->getRootdir() . '/../src' . '/Pluetzner/BlockBundle/Resources/public/img/no_image_thumb.gif';
+
+            if (null !== $entityBlock) {
+                $type = $entityBlock->getEntityBlockType();
+                $blocks = $type->getImageBlocks();
+                $exists = false;
+                foreach ($blocks as $block) {
+                    if ($oldslug === $block['name']) {
+                        $exists = true;
+                    }
+                }
+
+                if (false === $exists) {
+                    $blocks[] = ['name' => $oldslug];
+                    $type->setImageBlocks($blocks);
+                    $this->getDoctrine()->getManager()->persist($type);
+                }
+            }
+
+            $path = __DIR__ . '/../Resources/img/no_image_thumb.gif';
             $data = file_get_contents($path);
 
             $imageBlock = new ImageBlock();
             $imageBlock
+                ->setEntityBlock($entityBlock)
                 ->setSlug($slug)
                 ->setImage(base64_encode($data))
                 ->setMimeType('image/gif');
@@ -179,19 +262,76 @@ class BlockExtension extends \Twig_Extension
     }
 
     /**
-     * @param string $slug
+     * @param string|EntityBlockType $slug
      * @param string $icon
      * @param string $text
-     *
      * @param string $color
+     *
      * @return string
      */
-    public function getButtonBlock($slug, $icon='edit', $text='', $color='black')
+    public function getButtonBlock($slug, $icon = 'edit', $text = '', $color = 'black')
     {
-
+        if (false === $this->getTwig()->isGranted('ROLE_ADMIN')) {
+            return '';
+        }
+        $classes = 'buttonblock';
         $iconHtml = sprintf('<i class="fa %sfa-%s"></i>', $color == 'white' ? 'icon-white ' : '', $icon);
 
-        return sprintf("<a href='javascript:void(0)' class='buttonblock' data-slug='%s'>%s%s</a>", $slug, $iconHtml, $text);
+        $editData = '';
+        $type = $this->getDoctrine()->getRepository(EntityBlockType::class)->findOneBy(['slug' => $slug]);
+
+        if (null !== $type) {
+            $slug = $type->getSlug();
+            $classes = 'addEntityButtonBlock';
+
+            $route = $this->getRouter()->generate('pluetzner_block_entityblock_editajax', ['id' => 0, 'type' => $type->getSlug()]);
+            $editData = sprintf('data-href="%s"', $route);
+        }
+
+        return sprintf("<a href='javascript:void(0)' %s class='%s' data-slug='%s'>%s%s</a>", $editData, $classes, $slug, $iconHtml, $text);
+    }
+
+    /**
+     * @param string $type
+     * @param int $limit
+     * @param bool $returnType
+     *
+     * @return \Doctrine\Common\Collections\ArrayCollection|EntityBlock[]
+     */
+    public function getEntityBlocks($type, $limit = 0)
+    {
+        $blockType = $this->getDoctrine()->getRepository(EntityBlockType::class)->findOneBy(['slug' => $type]);
+
+        if (null === $blockType) {
+            $blockType = new EntityBlockType();
+            $blockType->setSlug($type);
+
+            $this->getDoctrine()->getManager()->persist($blockType);
+            $this->getDoctrine()->getManager()->flush();
+        }
+
+        if (0 === $limit) {
+            return $blockType->getEntityBlocks();
+        }
+
+        $pageKey = sprintf('%sPage', $type);
+        $page = $this->getRequest()->getCurrentRequest()->get($pageKey);
+
+        if (null === $page) {
+            $page = 1;
+        }
+
+        $paginator = $this->getPaginator();
+        $pagination = $paginator->paginate(
+            $blockType->getEntityBlocks(),
+            $page,
+            $limit,
+            [
+                'pageParameterName' => $pageKey,
+            ]
+        );
+
+        return $pagination;
     }
 
     /**
@@ -237,6 +377,8 @@ class BlockExtension extends \Twig_Extension
             $result = imagepng($dst_img, $moveTo, 8);
         } elseif ($mimeType == 'image/jpg' || $mimeType == 'image/jpeg' || $mimeType == 'image/pjpeg') {
             $result = imagejpeg($dst_img, $moveTo, 80);
+        } elseif ($mimeType == 'image/gif') {
+            $result = imagegif($dst_img, $moveTo, 80);
         }
 
         imagedestroy($dst_img);

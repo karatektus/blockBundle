@@ -116,7 +116,8 @@ class Builder
 
         //$categoryMenu = $menu->addChild("Kategorien", array('route' => 'pm_core_category_index'));
         if ($this->getAuthorizationChecker()->isGranted("ROLE_ADMIN_DEVELOPER")) {
-            $blockMenu = $menu->addChild("Textblöcke", ['route' => 'pluetzner_block_textblock_index']);
+            $textBlockMenu = $menu->addChild("Textblöcke", ['route' => 'pluetzner_block_textblock_index']);
+            $imageBlockMenu = $menu->addChild("Bildblöcke", ['route' => 'pluetzner_block_imageblock_index']);
         }
         return $menu;
     }
