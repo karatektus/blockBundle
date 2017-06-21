@@ -26,6 +26,14 @@ services:
             - [ setLocales, [%locales%] ]
         tags:
             - { name: form.type }
+    pluetzner_block.form.string_block_form_type:
+        class: Pluetzner\BlockBundle\Form\StringBlockFormType
+        arguments: ['@sim_trans_form.mapper']
+        calls:
+            - [ setRequiredLocale, [%locale%] ]
+            - [ setLocales, [%locales%] ]
+        tags:
+            - { name: form.type }
     pluetzner_block.twig.icon_extension:
         class: Pluetzner\BlockBundle\Twig\IconExtension
         tags:

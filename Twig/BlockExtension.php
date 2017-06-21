@@ -12,6 +12,7 @@ use Knp\Component\Pager\Paginator;
 use Pluetzner\BlockBundle\Entity\EntityBlock;
 use Pluetzner\BlockBundle\Entity\EntityBlockType;
 use Pluetzner\BlockBundle\Entity\ImageBlock;
+use Pluetzner\BlockBundle\Entity\StringBlock;
 use Pluetzner\BlockBundle\Entity\TextBlock;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Bridge\Twig\Extension\SecurityExtension;
@@ -129,6 +130,7 @@ class BlockExtension extends \Twig_Extension
     {
         return [
             new \Twig_SimpleFunction('imageBlock', [$this, 'getImageBlock'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('stringBlock', [$this, 'getStringBlock'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('textBlock', [$this, 'getTextBlock'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('buttonBlock', [$this, 'getButtonBlock'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('entityBlocks', [$this, 'getEntityBlocks']),
@@ -186,6 +188,59 @@ class BlockExtension extends \Twig_Extension
         }
 
         return sprintf('<p class="%s>%s</p>', $editData, $textblock->getText());
+    }
+
+        /**
+     * @param $slug
+     * @param EntityBlock $entityBlock
+     * @return string
+     */
+    public function getStringBlock($slug, $entityBlock = null)
+    {
+        if (null !== $entityBlock) {
+            $oldslug = $slug;
+            $slug = sprintf('%s_%s_%s', $entityBlock->getEntityBlockType()->getSlug(), $entityBlock->getId(), $slug);
+        }
+
+        $stringBlock = $this->getDoctrine()->getRepository(StringBlock::class)->findOneBy(['slug' => $slug]);
+
+        if (null === $stringBlock) {
+
+            if (null !== $entityBlock) {
+                $type = $entityBlock->getEntityBlockType();
+                $blocks = $type->getStringBlocks();
+                $exists = false;
+                foreach ($blocks as $block) {
+                    if ($oldslug === $block['name']) {
+                        $exists = true;
+                    }
+                }
+
+                if (false === $exists) {
+                    $blocks[] = ['name' => $oldslug];
+                    $type->setTextBlocks($blocks);
+                    $this->getDoctrine()->getManager()->persist($type);
+                }
+            }
+
+            $stringBlock = new StringBlock();
+            $stringBlock
+                ->setEntityBlock($entityBlock)
+                ->setSlug($slug)
+                ->setText('No such Textblock');
+
+            $this->getDoctrine()->getManager()->persist($stringBlock);
+            $this->getDoctrine()->getManager()->flush();
+        }
+
+
+        $editData = '"';
+        if ($this->getTwig()->isGranted('ROLE_ADMIN')) {
+            $route = $this->getRouter()->generate('pluetzner_block_stringblock_editajax', ['id' => $stringBlock->getId()]);
+            $editData = sprintf('%s stringblock" data-href="%s"', $stringBlock->getSlug(), $route);
+        }
+
+        return sprintf('<string class="%s>%s</p>', $editData, $stringBlock->getText());
     }
 
     /**

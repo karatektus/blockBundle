@@ -75,11 +75,22 @@ var blockBootBox = function () {
         init: function () {
             var _self = this;
             var textblock = $('.textblock');
+            var stringblock = $('.stringblock');
             var imageblock = $('.imageblock');
             var buttonblock = $('.buttonblock');
             var addentity = $('.addEntityButtonBlock');
 
             textblock.on('dblclick taphold', function () {
+                var currentBlock = this;
+                _self.form(currentBlock, function (result) {
+                    $(currentBlock).text(result);
+                    bootbox.hideAll();
+                });
+
+                return false;
+            }).removeClass('disabled');
+
+            stringblock.on('dblclick taphold', function () {
                 var currentBlock = this;
                 _self.form(currentBlock, function (result) {
                     $(currentBlock).text(result);
@@ -99,7 +110,7 @@ var blockBootBox = function () {
             }).removeClass('disabled');
 
             buttonblock.click(function () {
-                $("."+$(this).data('slug')).first().dblclick();
+                $("." + $(this).data('slug')).first().dblclick();
             });
 
             addentity.click(function () {

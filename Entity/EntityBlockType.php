@@ -45,6 +45,13 @@ class EntityBlockType extends EntityBlockTypeModel
      */
     private $textBlocks;
 
+    /**
+     * @var array
+     *
+     * @ORM\Column(name="string_blocks", type="array")
+     */
+    private $stringBlocks;
+
 
     /**
      * @var ArrayCollection|EntityBlock[]
@@ -85,7 +92,7 @@ class EntityBlockType extends EntityBlockTypeModel
      */
     public function getImageBlocks()
     {
-        if(null === $this ->imageBlocks){
+        if (null === $this->imageBlocks) {
             return [];
         }
         return $this->imageBlocks;
@@ -104,7 +111,7 @@ class EntityBlockType extends EntityBlockTypeModel
      */
     public function getTextBlocks()
     {
-        if(null === $this ->textBlocks){
+        if (null === $this->textBlocks) {
             return [];
         }
         return $this->textBlocks;
@@ -117,6 +124,28 @@ class EntityBlockType extends EntityBlockTypeModel
     {
         $this->textBlocks = $textBlocks;
     }
+
+    /**
+     * @return array
+     */
+    public function getStringBlocks()
+    {
+        if (null === $this->stringBlocks) {
+            return [];
+        }
+        return $this->stringBlocks;
+    }
+
+    /**
+     * @param array $stringBlocks
+     * @return EntityBlockType
+     */
+    public function setStringBlocks($stringBlocks)
+    {
+        $this->stringBlocks = $stringBlocks;
+        return $this;
+    }
+
 
     /**
      * @return ArrayCollection|EntityBlock[]

@@ -48,6 +48,13 @@ class EntityBlock extends EntityBlockModel
     private $published;
 
     /**
+     * @var ArrayCollection|StringBlock[]
+     *
+     * @ORM\OneToMany(targetEntity="Pluetzner\BlockBundle\Entity\StringBlock", mappedBy="entityBlock")
+     */
+    private $stringBlocks;
+
+    /**
      * @var ArrayCollection|TextBlock[]
      *
      * @ORM\OneToMany(targetEntity="Pluetzner\BlockBundle\Entity\TextBlock", mappedBy="entityBlock")
@@ -117,6 +124,24 @@ class EntityBlock extends EntityBlockModel
     public function setPublished($published)
     {
         $this->published = $published;
+    }
+
+    /**
+     * @return ArrayCollection|StringBlock[]
+     */
+    public function getStringBlocks()
+    {
+        return $this->stringBlocks;
+    }
+
+    /**
+     * @param ArrayCollection|StringBlock[] $stringBlocks
+     * @return EntityBlock
+     */
+    public function setStringBlocks($stringBlocks)
+    {
+        $this->stringBlocks = $stringBlocks;
+        return $this;
     }
 
     /**
