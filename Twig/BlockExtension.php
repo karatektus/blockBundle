@@ -61,8 +61,8 @@ class BlockExtension extends \Twig_Extension
      * BlockExtension constructor.
      *
      * @param RegistryInterface $doctrine
-     * @param Router $router
-     * @param string $rootdir
+     * @param Router            $router
+     * @param string            $rootdir
      * @param SecurityExtension $twig
      */
     public function __construct(RegistryInterface $doctrine, Router $router, $rootdir = '', SecurityExtension $twig, Paginator $paginator, RequestStack $requestStack)
@@ -138,7 +138,7 @@ class BlockExtension extends \Twig_Extension
     }
 
     /**
-     * @param $slug
+     * @param             $slug
      * @param EntityBlock $entityBlock
      * @return string
      */
@@ -190,8 +190,8 @@ class BlockExtension extends \Twig_Extension
         return sprintf('<p class="%s>%s</p>', $editData, $textblock->getText());
     }
 
-        /**
-     * @param $slug
+    /**
+     * @param             $slug
      * @param EntityBlock $entityBlock
      * @return string
      */
@@ -244,9 +244,9 @@ class BlockExtension extends \Twig_Extension
     }
 
     /**
-     * @param string $slug
-     * @param int $width
-     * @param int $height
+     * @param string           $slug
+     * @param int              $width
+     * @param int              $height
      * @param EntityBlock|null $entityBlock
      *
      * @return string
@@ -304,6 +304,12 @@ class BlockExtension extends \Twig_Extension
 
         $imagePath = sprintf('%s/../web%s', $this->getRootdir(), $imageRoute);
         if (false === file_exists($imagePath)) {
+            if ('image/svg+xml' === $imageBlock->getMimeType()) {
+                if (!file_exists(dirname($imagePath))) {
+                    mkdir(dirname($imagePath), 0755, true);
+                }
+                file_put_contents($imagePath, base64_decode($imageBlock->getImage()));
+            }
             $this->resizeImage(imagecreatefromstring(base64_decode($imageBlock->getImage())), $imageBlock->getMimeType(), $width, $height, $imagePath);
         }
 
@@ -313,14 +319,22 @@ class BlockExtension extends \Twig_Extension
             $editData = sprintf('%s imageblock" data-href="%s"', $imageBlock->getSlug(), $route);
         }
 
-        return sprintf('<img class="%s src="%s">', $editData, $imageRoute);
+        $w = $h = '';
+        if(0 < $width){
+            $w = sprintf(' width=%s', $width);
+        }
+
+        if(0 < $height){
+            $h = sprintf(' height=%s', $height);
+        }
+        return sprintf('<img%s%s class="%s src="%s">', $w, $h, $editData, $imageRoute);
     }
 
     /**
      * @param string|EntityBlockType $slug
-     * @param string $icon
-     * @param string $text
-     * @param string $color
+     * @param string                 $icon
+     * @param string                 $text
+     * @param string                 $color
      *
      * @return string
      */
@@ -348,8 +362,8 @@ class BlockExtension extends \Twig_Extension
 
     /**
      * @param string $type
-     * @param int $limit
-     * @param bool $returnType
+     * @param int    $limit
+     * @param bool   $returnType
      *
      * @return \Doctrine\Common\Collections\ArrayCollection|EntityBlock[]
      */
@@ -393,10 +407,10 @@ class BlockExtension extends \Twig_Extension
      * Resize an image and copy it
      *
      * @param resource $src_img
-     * @param string $mimeType
-     * @param int $new_width
-     * @param int $new_height
-     * @param string $moveTo
+     * @param string   $mimeType
+     * @param int      $new_width
+     * @param int      $new_height
+     * @param string   $moveTo
      */
     private function resizeImage($src_img, $mimeType, $new_width, $new_height, $moveTo)
     {
@@ -424,16 +438,15 @@ class BlockExtension extends \Twig_Extension
         $dst_img = ImageCreateTrueColor($thumb_w, $thumb_h);
 
         imagecopyresampled($dst_img, $src_img, 0, 0, 0, 0, $thumb_w, $thumb_h, $old_x, $old_y);
-
         if (!file_exists(dirname($moveTo))) {
-            mkdir(dirname($moveTo));
+            mkdir(dirname($moveTo), 0755, true);
         }
         if ($mimeType == 'image/png') {
             $result = imagepng($dst_img, $moveTo, 8);
         } elseif ($mimeType == 'image/jpg' || $mimeType == 'image/jpeg' || $mimeType == 'image/pjpeg') {
             $result = imagejpeg($dst_img, $moveTo, 80);
         } elseif ($mimeType == 'image/gif') {
-            $result = imagegif($dst_img, $moveTo, 80);
+            $result = imagegif($dst_img, $moveTo);
         }
 
         imagedestroy($dst_img);

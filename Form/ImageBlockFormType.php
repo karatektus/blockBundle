@@ -47,6 +47,7 @@ class ImageBlockFormType extends AbstractType
                         "image/gif",
                         "image/png",
                         "image/jpeg",
+                        "image/svg+xml",
                     ],
                     "mimeTypesMessage" => "Bitte laden sie eine Bilddatei hoch.",
                     "maxSize" => "2M",
