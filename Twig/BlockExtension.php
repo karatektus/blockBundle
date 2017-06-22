@@ -180,14 +180,14 @@ class BlockExtension extends \Twig_Extension
             $this->getDoctrine()->getManager()->flush();
         }
 
-
-        $editData = '"';
+        $returnText = '%s';
         if ($this->getTwig()->isGranted('ROLE_ADMIN')) {
             $route = $this->getRouter()->generate('pluetzner_block_textblock_editajax', ['id' => $textblock->getId()]);
-            $editData = sprintf('%s textblock" data-href="%s"', $textblock->getSlug(), $route);
+            $editData = sprintf('<p class="%s textblock" data-href="%s">', $textblock->getSlug(), $route);
+            $returnText = $editData . '%s' . '</p>';
         }
 
-        return sprintf('<p class="%s>%s</p>', $editData, $textblock->getText());
+        return sprintf($returnText, $textblock->getText());
     }
 
     /**

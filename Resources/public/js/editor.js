@@ -10,7 +10,6 @@ var blockBootBox = function () {
          */
         form: function (element, onSuccess) {
             var _self = this;
-
             $.get($(element).data('href'), {}, function (result) {
                 _self.formCreate(element, result, onSuccess);
             });
@@ -36,7 +35,6 @@ var blockBootBox = function () {
             } else {
                 size = null;
             }
-
             bootbox.dialog({
                 className: "bootbox-form-dialog",
                 title: title,
@@ -66,6 +64,16 @@ var blockBootBox = function () {
                         }
                     }
                 }
+            }).on('shown.bs.modal', function () {
+                var elements = $('.bootbox-form-dialog textarea');
+                $.each(elements, function (no) {
+                    var el = this;
+                    var mde = new SimpleMDE({
+                        element: el,
+                        forceSync: true,
+                        spellChecker: false
+                    });
+                });
             });
 
         },
@@ -125,7 +133,6 @@ var blockBootBox = function () {
 
 }();
 
-(function ready() {
-    if (!document.body) {setTimeout(ready, 50); return;}
+$(document).ready(function () {
     blockBootBox.init();
-})();
+});
