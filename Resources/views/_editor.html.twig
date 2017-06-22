@@ -1,4 +1,6 @@
 {% if is_granted('ROLE_ADMIN') %}
+    <link rel="stylesheet" href="{{ asset('bundles/pluetznerblock/css/simplemde.min.css') }}">
     <script src="{{ asset('bundles/pluetznerblock/js/bootbox.min.js') }}"></script>
+    <script src="{{ asset('bundles/pluetznerblock/js/simplemde.min.js') }}"></script>
     <script src="{{ asset('bundles/pluetznerblock/js/editor.js') }}"></script>
 {% endif %}

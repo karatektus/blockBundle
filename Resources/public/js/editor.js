@@ -125,7 +125,7 @@ var blockBootBox = function () {
 
 }();
 
-
-$(document).ready(function () {
+(function ready() {
+    if (!document.body) {setTimeout(ready, 50); return;}
     blockBootBox.init();
-});
+})();
