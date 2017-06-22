@@ -9,7 +9,7 @@ use Pluetzner\BlockBundle\Framework\Traits\EditableEntityTrait;
 /**
  * TextBlock
  *
- * @ORM\Table(name="text_block")
+ * @ORM\Table(name="pl_cms_text_block")
  * @ORM\Entity(repositoryClass="Pluetzner\BlockBundle\Repository\TextBlockRepository")
  * @ORM\HasLifecycleCallbacks()
  */

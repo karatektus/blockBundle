@@ -9,7 +9,7 @@ use Pluetzner\BlockBundle\Model\EntityBlockTypeModel;
 /**
  * EntityBlockType
  *
- * @ORM\Table(name="entity_block_type")
+ * @ORM\Table(name="pl_cms_entity_block_type")
  * @ORM\Entity(repositoryClass="Pluetzner\BlockBundle\Repository\EntityBlockTypeRepository")
  * @ORM\HasLifecycleCallbacks()
  */

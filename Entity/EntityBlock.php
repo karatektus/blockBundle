@@ -10,7 +10,7 @@ use Pluetzner\BlockBundle\Framework\Traits\EditableEntityTrait;
 /**
  * ImageBlock
  *
- * @ORM\Table(name="entity_block")
+ * @ORM\Table(name="pl_cms_entity_block")
  * @ORM\Entity(repositoryClass="Pluetzner\BlockBundle\Repository\EntityBlockRepository")
  * @ORM\HasLifecycleCallbacks()
  */
