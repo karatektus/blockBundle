@@ -241,7 +241,7 @@ class BlockExtension extends \Twig_Extension
             $editData = sprintf('%s stringblock" data-href="%s"', $stringBlock->getSlug(), $route);
         }
 
-        return sprintf('<string class="%s>%s</p>', $editData, $stringBlock->getText());
+        return sprintf('<string class="%s>%s</string>', $editData, $stringBlock->getText());
     }
 
     /**
@@ -249,10 +249,11 @@ class BlockExtension extends \Twig_Extension
      * @param int              $width
      * @param int              $height
      * @param EntityBlock|null $entityBlock
+     * @param string           $classes
      *
      * @return string
      */
-    public function getImageBlock($slug, $width = 0, $height = 0, $entityBlock = null)
+    public function getImageBlock($slug, $width = 0, $height = 0, $entityBlock = null, $classes = '')
     {
         if (null !== $entityBlock) {
             $oldslug = $slug;
@@ -310,8 +311,9 @@ class BlockExtension extends \Twig_Extension
                     mkdir(dirname($imagePath), 0755, true);
                 }
                 file_put_contents($imagePath, base64_decode($imageBlock->getImage()));
+            } else {
+                $this->resizeImage(imagecreatefromstring(base64_decode($imageBlock->getImage())), $imageBlock->getMimeType(), $width, $height, $imagePath);
             }
-            $this->resizeImage(imagecreatefromstring(base64_decode($imageBlock->getImage())), $imageBlock->getMimeType(), $width, $height, $imagePath);
         }
 
         $editData = '"';
@@ -321,14 +323,14 @@ class BlockExtension extends \Twig_Extension
         }
 
         $w = $h = '';
-        if(0 < $width){
+        if (0 < $width) {
             $w = sprintf(' width=%s', $width);
         }
 
-        if(0 < $height){
+        if (0 < $height) {
             $h = sprintf(' height=%s', $height);
         }
-        return sprintf('<img%s%s class="%s src="%s">', $w, $h, $editData, $imageRoute);
+        return sprintf('<img%s%s class="%s %s src="%s">', $w, $h, $classes, $editData, $imageRoute);
     }
 
     /**
@@ -437,13 +439,17 @@ class BlockExtension extends \Twig_Extension
         }
 
         $dst_img = ImageCreateTrueColor($thumb_w, $thumb_h);
-
+        imagealphablending($dst_img, false);
+        imagesavealpha($dst_img, true);
+        $transparent = imagecolorallocatealpha($dst_img, 255, 255, 255, 127);
+        imagefilledrectangle($dst_img, 0, 0, $old_x, $old_y, $transparent);
         imagecopyresampled($dst_img, $src_img, 0, 0, 0, 0, $thumb_w, $thumb_h, $old_x, $old_y);
         if (!file_exists(dirname($moveTo))) {
             mkdir(dirname($moveTo), 0755, true);
         }
+
         if ($mimeType == 'image/png') {
-            $result = imagepng($dst_img, $moveTo, 8);
+            $result = imagepng($dst_img, $moveTo, 0);
         } elseif ($mimeType == 'image/jpg' || $mimeType == 'image/jpeg' || $mimeType == 'image/pjpeg') {
             $result = imagejpeg($dst_img, $moveTo, 80);
         } elseif ($mimeType == 'image/gif') {
