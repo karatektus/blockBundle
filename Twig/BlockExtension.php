@@ -183,11 +183,12 @@ class BlockExtension extends \Twig_Extension
         $returnText = '%s';
         if ($this->getTwig()->isGranted('ROLE_ADMIN')) {
             $route = $this->getRouter()->generate('pluetzner_block_textblock_editajax', ['id' => $textblock->getId()]);
-            $editData = sprintf('<p class="%s textblock" data-href="%s">', $textblock->getSlug(), $route);
-            $returnText = $editData . '%s' . '</p>';
+            $editData = sprintf('<text class="%s textblock" data-href="%s">', $textblock->getSlug(), $route);
+            $returnText = sprintf($returnText, $editData . '%s' . '</text>');
         }
 
-        return sprintf($returnText, $textblock->getText());
+        $parse = new \Parsedown();
+        return sprintf($returnText, $parse->text($textblock->getText()));
     }
 
     /**
