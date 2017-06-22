@@ -36,6 +36,7 @@ class EntityBlockFormType extends AbstractType
             ])
             ->add("published", DateType::class, [
                 "label" => "Veröffentlichungsdatum:",
+                'widget' => 'single_text',
             ]);
 
         if (true === $options['save_button']) {

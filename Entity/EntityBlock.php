@@ -68,6 +68,13 @@ class EntityBlock extends EntityBlockModel
      */
     private $imageBlocks;
 
+    public function __construct()
+    {
+        if (null == $this->getPublished()) {
+            $this->setPublished(new \DateTime());
+        }
+    }
+
     /**
      * Get id
      *
@@ -181,9 +188,7 @@ class EntityBlock extends EntityBlockModel
      */
     public function setOptionalFields()
     {
-        if (null == $this->getPublished()) {
-            $this->setPublished($this->getCreated());
-        }
+
     }
 }
 
