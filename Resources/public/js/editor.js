@@ -98,7 +98,7 @@ var blockBootBox = function () {
                 return false;
             }).removeClass('disabled');
 
-            stringblock.on('dblclick taphold', function () {
+            stringblock.on('dblclick tabhold', function () {
                 var currentBlock = this;
                 _self.form(currentBlock, function (result) {
                     $(currentBlock).text(result);
@@ -106,7 +106,7 @@ var blockBootBox = function () {
                 });
 
                 return false;
-            }).removeClass('disabled');
+            });
 
             imageblock.on('dblclick taphold', function () {
                 _self.form(this, function (result) {
@@ -118,6 +118,7 @@ var blockBootBox = function () {
             }).removeClass('disabled');
 
             buttonblock.click(function () {
+                console.log("." + $(this).data('slug'));
                 $("." + $(this).data('slug')).first().dblclick();
             });
 

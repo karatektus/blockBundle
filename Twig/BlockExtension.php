@@ -196,7 +196,7 @@ class BlockExtension extends \Twig_Extension
      * @param EntityBlock $entityBlock
      * @return string
      */
-    public function getStringBlock($slug, $entityBlock = null)
+    public function getStringBlock($slug, $entityBlock = null, $raw = false)
     {
         if (null !== $entityBlock) {
             $oldslug = $slug;
@@ -235,13 +235,15 @@ class BlockExtension extends \Twig_Extension
         }
 
 
-        $editData = '"';
-        if ($this->getTwig()->isGranted('ROLE_ADMIN')) {
+        $returnText = '%s';
+        if ($this->getTwig()->isGranted('ROLE_ADMIN') && false === $raw) {
             $route = $this->getRouter()->generate('pluetzner_block_stringblock_editajax', ['id' => $stringBlock->getId()]);
-            $editData = sprintf('%s stringblock" data-href="%s"', $stringBlock->getSlug(), $route);
+            $editData = sprintf('<string title="Slug: %s" class="%s stringblock" data-href="%s">', $stringBlock->getSlug(), $stringBlock->getSlug(), $route);
+            $returnText = sprintf($returnText, $editData . '%s' . '</string>');
         }
+        dump(sprintf($returnText, $stringBlock->getText()));
 
-        return sprintf('<string class="%s>%s</string>', $editData, $stringBlock->getText());
+        return sprintf($returnText, $stringBlock->getText());
     }
 
     /**
@@ -341,7 +343,7 @@ class BlockExtension extends \Twig_Extension
      *
      * @return string
      */
-    public function getButtonBlock($slug, $icon = 'edit', $text = '', $color = 'black')
+    public function getButtonBlock($slug, $icon = 'edit', $text = '', $entityBlock = null, $color = 'black')
     {
         if (false === $this->getTwig()->isGranted('ROLE_ADMIN')) {
             return '';
@@ -350,16 +352,19 @@ class BlockExtension extends \Twig_Extension
         $iconHtml = sprintf('<i class="fa %sfa-%s"></i>', $color == 'white' ? 'icon-white ' : '', $icon);
 
         $editData = '';
-        $type = $this->getDoctrine()->getRepository(EntityBlockType::class)->findOneBy(['slug' => $slug]);
+        if(null !== $entityBlock){
+            $slug = sprintf('%s_%s_%s', $entityBlock->getEntityBlockType()->getSlug(), $entityBlock->getId(), $slug);
+        } else {
+            $type = $this->getDoctrine()->getRepository(EntityBlockType::class)->findOneBy(['slug' => $slug]);
 
-        if (null !== $type) {
-            $slug = $type->getSlug();
-            $classes = 'addEntityButtonBlock';
+            if (null !== $type) {
+                $slug = $type->getSlug();
+                $classes = 'addEntityButtonBlock';
 
-            $route = $this->getRouter()->generate('pluetzner_block_entityblock_editajax', ['id' => 0, 'type' => $type->getSlug()]);
-            $editData = sprintf('data-href="%s"', $route);
+                $route = $this->getRouter()->generate('pluetzner_block_entityblock_editajax', ['id' => 0, 'type' => $type->getSlug()]);
+                $editData = sprintf('data-href="%s"', $route);
+            }
         }
-
         return sprintf("<a href='javascript:void(0)' %s class='%s' data-slug='%s'>%s%s</a>", $editData, $classes, $slug, $iconHtml, $text);
     }
 
