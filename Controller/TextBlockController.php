@@ -102,7 +102,8 @@ class TextBlockController extends Controller
             $manager->persist($textblock);
             $manager->flush();
 
-            return new Response($textblock->getText());
+            $parseDown = new \Parsedown();
+            return new Response($parseDown->text($textblock->getText()));
         }
 
         return [

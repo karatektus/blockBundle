@@ -91,7 +91,7 @@ var blockBootBox = function () {
             textblock.on('dblclick taphold', function () {
                 var currentBlock = this;
                 _self.form(currentBlock, function (result) {
-                    $(currentBlock).text(result);
+                    $(currentBlock).html(result);
                     bootbox.hideAll();
                 });
 
