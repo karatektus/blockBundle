@@ -366,11 +366,11 @@ class BlockExtension extends \Twig_Extension
     /**
      * @param string $type
      * @param int    $limit
-     * @param bool   $returnType
+     * @param int    $offset
      *
      * @return \Doctrine\Common\Collections\ArrayCollection|EntityBlock[]
      */
-    public function getEntityBlocks($type, $limit = 0)
+    public function getEntityBlocks($type, $limit = 0, $offset = 0)
     {
         $blockType = $this->getDoctrine()->getRepository(EntityBlockType::class)->findOneBy(['slug' => $type]);
 
@@ -382,11 +382,23 @@ class BlockExtension extends \Twig_Extension
             $this->getDoctrine()->getManager()->flush();
         }
 
+        $qb = $this->getDoctrine()->getRepository(EntityBlock::class)->createQueryBuilder('b');
+        $qb
+            ->join('b.entityBlockType', 'type')
+            ->where('b.deleted = :showDeleted')
+            ->andWhere('type.id = :typeId')
+            ->orderBy('b.created', 'ASC')
+            ->setFirstResult($offset)
+            ->setParameters([
+                'showDeleted' => false,
+                'typeId' => $blockType->getId(),
+            ]);
+
         if (0 === $limit) {
-            return $blockType->getEntityBlocks();
+            return $qb->getQuery()->getResult();
         }
 
-        $pageKey = sprintf('%sPage', $type);
+        $pageKey = sprintf('%s%sPage', $type, $limit);
         $page = $this->getRequest()->getCurrentRequest()->get($pageKey);
 
         if (null === $page) {
@@ -395,7 +407,7 @@ class BlockExtension extends \Twig_Extension
 
         $paginator = $this->getPaginator();
         $pagination = $paginator->paginate(
-            $blockType->getEntityBlocks(),
+            $qb->getQuery()->getResult(),
             $page,
             $limit,
             [
