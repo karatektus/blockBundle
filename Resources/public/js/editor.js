@@ -47,6 +47,7 @@ var blockBootBox = function () {
                         callback: function () {
                             var form = $('.bootbox-form-dialog form')[0];
                             var formData = new FormData(form);
+                            console.log($(element).data('href'));
                             $.ajax({
                                 url: $(element).data('href'),
                                 data: formData,
@@ -98,7 +99,7 @@ var blockBootBox = function () {
                 return false;
             }).removeClass('disabled');
 
-            stringblock.on('dblclick tabhold', function () {
+            stringblock.on('dblclick taphold', function () {
                 var currentBlock = this;
                 _self.form(currentBlock, function (result) {
                     $(currentBlock).text(result);
@@ -117,8 +118,7 @@ var blockBootBox = function () {
                 return false;
             }).removeClass('disabled');
 
-            buttonblock.click(function () {
-                console.log("." + $(this).data('slug'));
+            buttonblock.click(function (ev) {
                 $("." + $(this).data('slug')).first().dblclick();
             });
 

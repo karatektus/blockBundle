@@ -241,7 +241,6 @@ class BlockExtension extends \Twig_Extension
             $editData = sprintf('<string title="Slug: %s" class="%s stringblock" data-href="%s">', $stringBlock->getSlug(), $stringBlock->getSlug(), $route);
             $returnText = sprintf($returnText, $editData . '%s' . '</string>');
         }
-        dump(sprintf($returnText, $stringBlock->getText()));
 
         return sprintf($returnText, $stringBlock->getText());
     }
@@ -255,7 +254,7 @@ class BlockExtension extends \Twig_Extension
      *
      * @return string
      */
-    public function getImageBlock($slug, $width = 0, $height = 0, $entityBlock = null, $classes = '')
+    public function getImageBlock($slug, $width = 0, $height = 0, $entityBlock = null, $classes = '', $alt = '')
     {
         if (null !== $entityBlock) {
             $oldslug = $slug;
@@ -332,7 +331,7 @@ class BlockExtension extends \Twig_Extension
         if (0 < $height) {
             $h = sprintf(' height=%s', $height);
         }
-        return sprintf('<img%s%s class="%s %s src="%s">', $w, $h, $classes, $editData, $imageRoute);
+        return sprintf('<img%s%s class="%s %s src="%s" alt="%s">', $w, $h, $classes, $editData, $imageRoute, $alt);
     }
 
     /**
@@ -349,7 +348,7 @@ class BlockExtension extends \Twig_Extension
             return '';
         }
         $classes = 'buttonblock';
-        $iconHtml = sprintf('<i class="fa %sfa-%s"></i>', $color == 'white' ? 'icon-white ' : '', $icon);
+        $iconHtml = sprintf('<i class="fa %sfa-%s"></i> ', $color == 'white' ? 'icon-white ' : '', $icon);
 
         $editData = '';
         if(null !== $entityBlock){
