@@ -458,6 +458,8 @@ class BlockExtension extends \Twig_Extension
     /**
      * @param EntityBlock $entityBlock
      * @param int|string  $count
+     *
+     * @return EntityBlock
      */
     public function addCount($entityBlock, $count = 0)
     {
@@ -470,6 +472,8 @@ class BlockExtension extends \Twig_Extension
         }
         $this->getDoctrine()->getManager()->persist($entityBlock);
         $this->getDoctrine()->getManager()->flush();
+
+        return $entityBlock;
     }
 
     /**
