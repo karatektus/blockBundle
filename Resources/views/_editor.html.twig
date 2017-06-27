@@ -1,9 +1,25 @@
 {% if is_granted('ROLE_ADMIN') %}
-    <link rel="stylesheet" href="{{ asset('bundles/pluetznerblock/css/editor.css') }}">
-    <link rel="stylesheet" href="{{ asset('bundles/pluetznerblock/css/simplemde.min.css') }}">
-    <script src="{{ asset('bundles/pluetznerblock/js/jquery-3.2.1.min.js') }}"></script>
-    <script src="{{ asset('bundles/pluetznerblock/js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('bundles/pluetznerblock/js/bootbox.min.js') }}"></script>
-    <script src="{{ asset('bundles/pluetznerblock/js/simplemde.min.js') }}"></script>
-    <script src="{{ asset('bundles/pluetznerblock/js/editor.js') }}"></script>
+
+    {% include '@PMTool/module/nonblocking_styles.html.twig' with {
+    assets: [
+    asset('bundles/pluetznerblock/css/editor.css') ,
+    asset('bundles/pluetznerblock/css/simplemde.min.css')
+    ]
+    } %}
+
+    {% set js = [
+    asset('bundles/pluetznerblock/js/bootbox.min.js'),
+    asset('bundles/pluetznerblock/js/simplemde.min.js'),
+    asset('bundles/pluetznerblock/js/editor.js'),
+    ] %}
+
+    {% if jquery is not defined or jquery == true %}
+        {% set js = js|merge([asset('bundles/pluetznerblock/js/jquery-3.2.1.min.js')]) %}
+    {% endif %}
+
+    {% if bootstrap is not defined or bootstrap == true %}
+        {% set js = js|merge([asset('bundles/pluetznerblock/js/bootstrap.min.js')]) %}
+    {% endif %}
+
+    {% include '@PMTool/module/nonblocking_scripts.html.twig' with {assets:js} %}
 {% endif %}

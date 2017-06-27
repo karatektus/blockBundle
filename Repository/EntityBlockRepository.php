@@ -3,6 +3,7 @@
 namespace Pluetzner\BlockBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Pluetzner\BlockBundle\Entity\EntityBlock;
 
 /**
  * EntityBlockRepository
@@ -12,4 +13,28 @@ use Doctrine\ORM\EntityRepository;
  */
 class EntityBlockRepository extends EntityRepository
 {
+
+    /**
+     * @param string $slug
+     * @param string $type
+     * @return EntityBlock|null
+     */
+    public function findOneBySlugAndType($slug, $type){
+        $qb = $this->createQueryBuilder('eb');
+
+        $eb = $qb
+            ->join('eb.entityBlockType', 'entityType')
+            ->where('entityType.slug = :type')
+            ->andWhere('eb.deleted = :deleted')
+            ->andWhere('eb.slug = :slug')
+            ->setParameters([
+                'type' => $type,
+                'slug' => $slug,
+                'deleted' => false,
+            ])
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $eb;
+    }
 }

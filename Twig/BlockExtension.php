@@ -137,6 +137,14 @@ class BlockExtension extends \Twig_Extension
         ];
     }
 
+    public function getFilters()
+    {
+        return [
+            new \Twig_SimpleFilter('addCount', [$this, 'addCount'])
+        ];
+    }
+
+
     /**
      * @param             $slug
      * @param EntityBlock $entityBlock
@@ -351,7 +359,7 @@ class BlockExtension extends \Twig_Extension
         $iconHtml = sprintf('<i class="fa %sfa-%s"></i> ', $color == 'white' ? 'icon-white ' : '', $icon);
 
         $editData = '';
-        if(null !== $entityBlock){
+        if (null !== $entityBlock) {
             $slug = sprintf('%s_%s_%s', $entityBlock->getEntityBlockType()->getSlug(), $entityBlock->getId(), $slug);
         } else {
             $type = $this->getDoctrine()->getRepository(EntityBlockType::class)->findOneBy(['slug' => $slug]);
@@ -374,7 +382,7 @@ class BlockExtension extends \Twig_Extension
      *
      * @return \Doctrine\Common\Collections\ArrayCollection|EntityBlock[]
      */
-    public function getEntityBlocks($type, $limit = 0, $offset = 0)
+    public function getEntityBlocks($type, $limit = 0, $offset = 0, $search = null, $order = EntityBlock::ORDER_PUBLISHED, $direction = EntityBlock::DIRECTION_ASC)
     {
         $blockType = $this->getDoctrine()->getRepository(EntityBlockType::class)->findOneBy(['slug' => $type]);
 
@@ -386,17 +394,42 @@ class BlockExtension extends \Twig_Extension
             $this->getDoctrine()->getManager()->flush();
         }
 
+        $dire = 'ASC';
+        if ($direction = EntityBlock::DIRECTION_DESC) {
+            $dire = 'DESC';
+        }
+        switch ($order) {
+            case EntityBlock::ORDER_COUNT:
+                $orderBy = 'count';
+                break;
+            case EntityBlock::ORDER_CREATED:
+                $orderBy = 'created';
+                break;
+            case EntityBlock::ORDER_EDITED:
+                $orderBy = 'edited';
+                break;
+            default:
+                $orderBy = 'published';
+                break;
+        }
+
         $qb = $this->getDoctrine()->getRepository(EntityBlock::class)->createQueryBuilder('b');
         $qb
             ->join('b.entityBlockType', 'type')
             ->where('b.deleted = :showDeleted')
             ->andWhere('type.id = :typeId')
-            ->orderBy('b.created', 'ASC')
+            ->orderBy('b.' . $orderBy , $dire)
             ->setFirstResult($offset)
             ->setParameters([
                 'showDeleted' => false,
                 'typeId' => $blockType->getId(),
             ]);
+
+        if (null !== $search) {
+            $qb
+                ->andWhere('b.title LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+        }
 
         if (0 === $limit) {
             return $qb->getQuery()->getResult();
@@ -420,6 +453,23 @@ class BlockExtension extends \Twig_Extension
         );
 
         return $pagination;
+    }
+
+    /**
+     * @param EntityBlock $entityBlock
+     * @param int|string  $count
+     */
+    public function addCount($entityBlock, $count = 0)
+    {
+        if (0 === $count) {
+            $entityBlock->setCount($entityBlock->getCount() + 1);
+        } elseif (true === is_int($count)) {
+            $entityBlock->setCount($count);
+        } else {
+            $entityBlock->setCount($entityBlock->getCount() + intval($count));
+        }
+        $this->getDoctrine()->getManager()->persist($entityBlock);
+        $this->getDoctrine()->getManager()->flush();
     }
 
     /**

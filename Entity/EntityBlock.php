@@ -5,10 +5,11 @@ namespace Pluetzner\BlockBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Pluetzner\BlockBundle\Model\EntityBlockModel;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Pluetzner\BlockBundle\Framework\Traits\EditableEntityTrait;
 
 /**
- * ImageBlock
+ * EntityBlock
  *
  * @ORM\Table(name="pl_cms_entity_block")
  * @ORM\Entity(repositoryClass="Pluetzner\BlockBundle\Repository\EntityBlockRepository")
@@ -33,6 +34,13 @@ class EntityBlock extends EntityBlockModel
      */
     private $entityBlockType;
 
+
+    /**
+     * @Gedmo\Slug(fields={"title"}, updatable=false)
+     * @ORM\Column(length=255, unique=true)
+     */
+    private $slug;
+
     /**
      * @var string
      *
@@ -46,6 +54,13 @@ class EntityBlock extends EntityBlockModel
      * @ORM\Column(name="published", type="datetime")
      */
     private $published;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="count", type="integer")
+     */
+    private $count;
 
     /**
      * @var ArrayCollection|StringBlock[]
@@ -73,6 +88,10 @@ class EntityBlock extends EntityBlockModel
         if (null == $this->getPublished()) {
             $this->setPublished(new \DateTime());
         }
+
+        if (null === $this->getCount()){
+            $this->setCount(0);
+        }
     }
 
     /**
@@ -99,6 +118,24 @@ class EntityBlock extends EntityBlockModel
     public function setEntityBlockType($entityBlockType)
     {
         $this->entityBlockType = $entityBlockType;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSlug()
+    {
+        return $this->slug;
+    }
+
+    /**
+     * @param mixed $slug
+     * @return EntityBlock
+     */
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+        return $this;
     }
 
     /**
@@ -131,6 +168,24 @@ class EntityBlock extends EntityBlockModel
     public function setPublished($published)
     {
         $this->published = $published;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCount()
+    {
+        return $this->count;
+    }
+
+    /**
+     * @param int $count
+     * @return EntityBlock
+     */
+    public function setCount($count)
+    {
+        $this->count = $count;
+        return $this;
     }
 
     /**

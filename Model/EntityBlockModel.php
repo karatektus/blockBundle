@@ -13,4 +13,11 @@ namespace Pluetzner\BlockBundle\Model;
  */
 class EntityBlockModel
 {
+    const ORDER_PUBLISHED = 0;
+    const ORDER_COUNT = 1;
+    const ORDER_CREATED = 2;
+    const ORDER_EDITED = 3;
+
+    const DIRECTION_ASC = 0;
+    const DIRECTION_DESC = 1;
 }
