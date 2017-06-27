@@ -150,7 +150,7 @@ class BlockExtension extends \Twig_Extension
      * @param EntityBlock $entityBlock
      * @return string
      */
-    public function getTextBlock($slug, $entityBlock = null)
+    public function getTextBlock($slug, $entityBlock = null, $length = 0)
     {
         if (null !== $entityBlock) {
             $oldslug = $slug;
@@ -194,9 +194,13 @@ class BlockExtension extends \Twig_Extension
             $editData = sprintf('<text title="Slug: %s" class="%s textblock" data-href="%s">', $textblock->getSlug(), $textblock->getSlug(), $route);
             $returnText = sprintf($returnText, $editData . '%s' . '</text>');
         }
+        $text = $textblock->getText();
+        if (0 < $length) {
+            $text = substr($text, 0, $length) . '...';
+        }
 
         $parse = new \Parsedown();
-        return sprintf($returnText, $parse->text($textblock->getText()));
+        return sprintf($returnText, $parse->text($text));
     }
 
     /**
@@ -262,7 +266,7 @@ class BlockExtension extends \Twig_Extension
      *
      * @return string
      */
-    public function getImageBlock($slug, $width = 0, $height = 0, $entityBlock = null, $classes = '', $alt = '')
+    public function getImageBlock($slug, $width = 0, $height = 0, $entityBlock = null, $classes = '', $alt = '', $urlOnly = false)
     {
         if (null !== $entityBlock) {
             $oldslug = $slug;
@@ -325,6 +329,10 @@ class BlockExtension extends \Twig_Extension
             }
         }
 
+        if (true === $urlOnly) {
+            return $imageRoute;
+        }
+
         $editData = '"';
         if ($this->getTwig()->isGranted('ROLE_ADMIN')) {
             $route = $this->getRouter()->generate('pluetzner_block_imageblock_editajax', ['id' => $imageBlock->getId()]);
@@ -370,8 +378,37 @@ class BlockExtension extends \Twig_Extension
 
                 $route = $this->getRouter()->generate('pluetzner_block_entityblock_editajax', ['id' => 0, 'type' => $type->getSlug()]);
                 $editData = sprintf('data-href="%s"', $route);
+
+                return sprintf("<a href='javascript:void(0)' %s class='%s' data-slug='%s'>%s%s</a>", $editData, $classes, $slug, $iconHtml, $text);
             }
         }
+
+        //tripplexorvodoo :o
+        $imageblock = $this->getDoctrine()->getRepository(ImageBlock::class)->findOneBy(['slug' => $slug]);
+        $stringblock = $this->getDoctrine()->getRepository(StringBlock::class)->findOneBy(['slug' => $slug]);
+        $textblock = $this->getDoctrine()->getRepository(TextBlock::class)->findOneBy(['slug' => $slug]);
+
+        $a = $imageblock instanceof ImageBlock;
+        $b = $stringblock instanceof StringBlock;
+        $c = $textblock instanceof TextBlock;
+
+        if (($a ^ $b ^ $c) && !($a && $b && $c)) {
+            if (true === $a) {
+                $path = 'pluetzner_block_imageblock_editajax';
+                $id = $imageblock->getId();
+            } elseif (true === $b) {
+                $path = 'pluetzner_block_stringblock_editajax';
+                $id = $stringblock->getId();
+            } else {
+                $path = 'pluetzner_block_textblock_editajax';
+                $id = $textblock->getId();
+            }
+            $route = $this->getRouter()->generate($path, ['id' => $id]);
+            $editData = sprintf('data-href="%s"', $route);
+        } else {
+            return sprintf('You used the slug "%s" in more than one blocktype. This breaks the Button', $slug);
+        }
+
         return sprintf("<a href='javascript:void(0)' %s class='%s' data-slug='%s'>%s%s</a>", $editData, $classes, $slug, $iconHtml, $text);
     }
 
@@ -418,7 +455,7 @@ class BlockExtension extends \Twig_Extension
             ->join('b.entityBlockType', 'type')
             ->where('b.deleted = :showDeleted')
             ->andWhere('type.id = :typeId')
-            ->orderBy('b.' . $orderBy , $dire)
+            ->orderBy('b.' . $orderBy, $dire)
             ->setFirstResult($offset)
             ->setParameters([
                 'showDeleted' => false,

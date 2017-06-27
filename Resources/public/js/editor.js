@@ -119,7 +119,11 @@ var blockBootBox = function () {
             }).removeClass('disabled');
 
             buttonblock.click(function (ev) {
-                $("." + $(this).data('slug')).first().dblclick();
+                var currentBlock = this;
+                _self.form(this, function (result) {
+                    bootbox.hideAll();
+                    location.reload();
+                });
             });
 
             addentity.click(function () {
