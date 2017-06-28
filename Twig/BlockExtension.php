@@ -358,13 +358,13 @@ class BlockExtension extends \Twig_Extension
      *
      * @return string
      */
-    public function getButtonBlock($slug, $icon = 'edit', $text = '', $entityBlock = null, $color = 'black')
+    public function getButtonBlock($slug, $icon = 'edit', $text = '', $entityBlock = null, $wrap = '%s')
     {
         if (false === $this->getTwig()->isGranted('ROLE_ADMIN')) {
             return '';
         }
         $classes = 'buttonblock';
-        $iconHtml = sprintf('<i class="fa %sfa-%s"></i> ', $color == 'white' ? 'icon-white ' : '', $icon);
+        $iconHtml = sprintf('<i class="fa fa-%s"></i> ',  $icon);
 
         $editData = '';
         if (null !== $entityBlock) {
@@ -379,7 +379,9 @@ class BlockExtension extends \Twig_Extension
                 $route = $this->getRouter()->generate('pluetzner_block_entityblock_editajax', ['id' => 0, 'type' => $type->getSlug()]);
                 $editData = sprintf('data-href="%s"', $route);
 
-                return sprintf("<a href='javascript:void(0)' %s class='%s' data-slug='%s'>%s%s</a>", $editData, $classes, $slug, $iconHtml, $text);
+                $returnvalue = sprintf("<a href='javascript:void(0)' %s class='%s' data-slug='%s'>%s%s</a>", $editData, $classes, $slug, $iconHtml, $text);
+
+                return sprintf($wrap, $returnvalue);
             }
         }
 
@@ -406,10 +408,12 @@ class BlockExtension extends \Twig_Extension
             $route = $this->getRouter()->generate($path, ['id' => $id]);
             $editData = sprintf('data-href="%s"', $route);
         } else {
-            return sprintf('You used the slug "%s" in more than one blocktype. This breaks the Button', $slug);
+            $returnvalue = sprintf('You used the slug "%s" in more than one blocktype. This breaks the Button', $slug);
+            return sprintf($wrap, $returnvalue);
         }
 
-        return sprintf("<a href='javascript:void(0)' %s class='%s' data-slug='%s'>%s%s</a>", $editData, $classes, $slug, $iconHtml, $text);
+        $returnvalue = sprintf("<a href='javascript:void(0)' %s class='%s' data-slug='%s'>%s%s</a>", $editData, $classes, $slug, $iconHtml, $text);
+        return sprintf($wrap, $returnvalue);
     }
 
     /**
