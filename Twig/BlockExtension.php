@@ -12,6 +12,7 @@ use Knp\Component\Pager\Paginator;
 use Pluetzner\BlockBundle\Entity\EntityBlock;
 use Pluetzner\BlockBundle\Entity\EntityBlockType;
 use Pluetzner\BlockBundle\Entity\ImageBlock;
+use Pluetzner\BlockBundle\Entity\OptionBlock;
 use Pluetzner\BlockBundle\Entity\StringBlock;
 use Pluetzner\BlockBundle\Entity\TextBlock;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -133,6 +134,7 @@ class BlockExtension extends \Twig_Extension
             new \Twig_SimpleFunction('stringBlock', [$this, 'getStringBlock'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('textBlock', [$this, 'getTextBlock'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('buttonBlock', [$this, 'getButtonBlock'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('optionBlock', [$this, 'getOptionBlock'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('entityBlocks', [$this, 'getEntityBlocks']),
         ];
     }
@@ -208,7 +210,7 @@ class BlockExtension extends \Twig_Extension
      * @param EntityBlock $entityBlock
      * @return string
      */
-    public function getStringBlock($slug, $entityBlock = null, $raw = false)
+    public function getStringBlock($slug, $entityBlock = null, $raw = false, $wrap = '%s')
     {
         if (null !== $entityBlock) {
             $oldslug = $slug;
@@ -247,8 +249,9 @@ class BlockExtension extends \Twig_Extension
         }
 
 
-        $returnText = '%s';
-        if ($this->getTwig()->isGranted('ROLE_ADMIN') && false === $raw) {
+        $returnText = $wrap;
+
+        if ($this->getTwig()->isGranted('ROLE_ADMIN') && false === $raw && $wrap === '%s') {
             $route = $this->getRouter()->generate('pluetzner_block_stringblock_editajax', ['id' => $stringBlock->getId()]);
             $editData = sprintf('<string title="Slug: %s" class="%s stringblock" data-href="%s">', $stringBlock->getSlug(), $stringBlock->getSlug(), $route);
             $returnText = sprintf($returnText, $editData . '%s' . '</string>');
@@ -364,7 +367,7 @@ class BlockExtension extends \Twig_Extension
             return '';
         }
         $classes = 'buttonblock';
-        $iconHtml = sprintf('<i class="fa fa-%s"></i> ',  $icon);
+        $iconHtml = sprintf('<i class="fa fa-%s"></i> ', $icon);
 
         $editData = '';
         if (null !== $entityBlock) {
@@ -389,28 +392,31 @@ class BlockExtension extends \Twig_Extension
         $imageblock = $this->getDoctrine()->getRepository(ImageBlock::class)->findOneBy(['slug' => $slug]);
         $stringblock = $this->getDoctrine()->getRepository(StringBlock::class)->findOneBy(['slug' => $slug]);
         $textblock = $this->getDoctrine()->getRepository(TextBlock::class)->findOneBy(['slug' => $slug]);
+        $optionblock = $this->getDoctrine()->getRepository(OptionBlock::class)->findOneBy(['slug' => $slug]);
 
         $a = $imageblock instanceof ImageBlock;
         $b = $stringblock instanceof StringBlock;
         $c = $textblock instanceof TextBlock;
+        $d = $optionblock instanceof OptionBlock;
 
-        if (($a ^ $b ^ $c) && !($a && $b && $c)) {
-            if (true === $a) {
-                $path = 'pluetzner_block_imageblock_editajax';
-                $id = $imageblock->getId();
-            } elseif (true === $b) {
-                $path = 'pluetzner_block_stringblock_editajax';
-                $id = $stringblock->getId();
-            } else {
-                $path = 'pluetzner_block_textblock_editajax';
-                $id = $textblock->getId();
-            }
-            $route = $this->getRouter()->generate($path, ['id' => $id]);
-            $editData = sprintf('data-href="%s"', $route);
+        if (true === $a && false === $b && false === $c && false === $d) {
+            $path = 'pluetzner_block_imageblock_editajax';
+            $id = $imageblock->getId();
+        } elseif (true === $b && false === $a && false === $c && false === $d) {
+            $path = 'pluetzner_block_stringblock_editajax';
+            $id = $stringblock->getId();
+        } elseif (true === $c && false === $b && false === $a && false === $d) {
+            $path = 'pluetzner_block_textblock_editajax';
+            $id = $textblock->getId();
+        } elseif (true === $d && false === $b && false === $c && false === $a) {
+            $path = 'pluetzner_block_optionblock_editajax';
+            $id = $optionblock->getId();
         } else {
             $returnvalue = sprintf('You used the slug "%s" in more than one blocktype. This breaks the Button', $slug);
             return sprintf($wrap, $returnvalue);
         }
+        $route = $this->getRouter()->generate($path, ['id' => $id]);
+        $editData = sprintf('data-href="%s"', $route);
 
         $returnvalue = sprintf("<a href='javascript:void(0)' %s class='%s' data-slug='%s'>%s%s</a>", $editData, $classes, $slug, $iconHtml, $text);
         return sprintf($wrap, $returnvalue);
@@ -494,6 +500,69 @@ class BlockExtension extends \Twig_Extension
         );
 
         return $pagination;
+    }
+
+    /**
+     * @param string      $slug
+     * @param array       $options
+     * @param string      $default
+     * @param EntityBlock $entityBlock
+     * @param bool        $raw
+     * @return string
+     */
+    public function getOptionBlock($slug, $options, $default, $entityBlock = null, $raw = false)
+    {
+        if (null !== $entityBlock) {
+            $oldslug = $slug;
+            $slug = sprintf('%s_%s_%s', $entityBlock->getEntityBlockType()->getSlug(), $entityBlock->getId(), $slug);
+        }
+
+        $optionBlock = $this->getDoctrine()->getRepository(OptionBlock::class)->findOneBy(['slug' => $slug]);
+
+        if (null === $optionBlock) {
+            if (null !== $entityBlock) {
+                $type = $entityBlock->getEntityBlockType();
+                $blocks = $type->getOptionBlocks();
+                $exists = false;
+                foreach ($blocks as $block) {
+                    if ($oldslug === $block['name']) {
+                        $exists = true;
+                    }
+                }
+
+                if (false === $exists) {
+                    $blocks[] = ['name' => $oldslug];
+                    $type->setTextBlocks($blocks);
+                    $this->getDoctrine()->getManager()->persist($type);
+                }
+            }
+
+            $optionBlock = new OptionBlock();
+            $optionBlock
+                ->setEntityBlock($entityBlock)
+                ->setSlug($slug)
+                ->setOptions($options)
+                ->setValue($default);
+
+            $this->getDoctrine()->getManager()->persist($optionBlock);
+            $this->getDoctrine()->getManager()->flush();
+        }
+
+
+        $returnText = '%s';
+
+        if (true === $raw) {
+            if ($this->getTwig()->isGranted('ROLE_ADMIN')) {
+                $route = $this->getRouter()->generate('pluetzner_block_optionblock_editajax', ['id' => $optionBlock->getId(), 'options' => $options]);
+                $editData = sprintf('<string title="Slug: %s" class="%s optionblock" data-href="%s">', $optionBlock->getSlug(), $optionBlock->getSlug(), $route);
+                $returnText = sprintf($returnText, $editData . '%s' . '</string>');
+                return sprintf($returnText, $optionBlock->getOptions()[$optionBlock->getValue()]);
+            }
+
+            return '';
+        }
+
+        return $optionBlock->getValue();
     }
 
     /**

@@ -69,6 +69,13 @@ class EntityBlock extends EntityBlockModel
      */
     private $stringBlocks;
 
+        /**
+     * @var ArrayCollection|OptionBlock[]
+     *
+     * @ORM\OneToMany(targetEntity="Pluetzner\BlockBundle\Entity\OptionBlock", mappedBy="entityBlock")
+     */
+    private $optionBlock;
+
     /**
      * @var ArrayCollection|TextBlock[]
      *
@@ -203,6 +210,24 @@ class EntityBlock extends EntityBlockModel
     public function setStringBlocks($stringBlocks)
     {
         $this->stringBlocks = $stringBlocks;
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection|OptionBlock[]
+     */
+    public function getOptionBlock()
+    {
+        return $this->optionBlock;
+    }
+
+    /**
+     * @param ArrayCollection|OptionBlock[] $optionBlock
+     * @return EntityBlock
+     */
+    public function setOptionBlock($optionBlock)
+    {
+        $this->optionBlock = $optionBlock;
         return $this;
     }
 

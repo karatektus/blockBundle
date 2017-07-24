@@ -52,6 +52,13 @@ class EntityBlockType extends EntityBlockTypeModel
      */
     private $stringBlocks;
 
+    /**
+     * @var array
+     *
+     * @ORM\Column(name="option_blocks", type="array")
+     */
+    private $optionBlocks;
+
 
     /**
      * @var ArrayCollection|EntityBlock[]
@@ -161,6 +168,24 @@ class EntityBlockType extends EntityBlockTypeModel
     public function setEntityBlocks($entityBlocks)
     {
         $this->entityBlocks = $entityBlocks;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOptionBlocks()
+    {
+        return $this->optionBlocks;
+    }
+
+    /**
+     * @param array $optionBlocks
+     * @return EntityBlockType
+     */
+    public function setOptionBlocks($optionBlocks)
+    {
+        $this->optionBlocks = $optionBlocks;
+        return $this;
     }
 }
 
