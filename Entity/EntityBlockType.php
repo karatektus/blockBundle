@@ -175,6 +175,9 @@ class EntityBlockType extends EntityBlockTypeModel
      */
     public function getOptionBlocks()
     {
+        if (null === $this->optionBlocks) {
+            return [];
+        }
         return $this->optionBlocks;
     }
 

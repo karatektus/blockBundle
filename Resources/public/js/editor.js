@@ -30,6 +30,14 @@ var blockBootBox = function () {
                 title = $(element).text();
             }
 
+            if($(element).attr('width') !== undefined){
+                title += ' Width: ' + $(element).attr('width');
+            }
+
+            if($(element).attr('height') !== undefined){
+                title += ' Height: ' + $(element).attr('height');
+            }
+
             if ($(element).data('size')) {
                 size = $(element).data('size');
             } else {
