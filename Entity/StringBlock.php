@@ -4,6 +4,7 @@ namespace Pluetzner\BlockBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\Translatable\Translatable;
 use Pluetzner\BlockBundle\Framework\Traits\EditableEntityTrait;
 
 /**
@@ -13,7 +14,7 @@ use Pluetzner\BlockBundle\Framework\Traits\EditableEntityTrait;
  * @ORM\Entity(repositoryClass="Pluetzner\BlockBundle\Repository\StringBlockRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class StringBlock
+class StringBlock implements Translatable
 {
     use EditableEntityTrait;
     /**

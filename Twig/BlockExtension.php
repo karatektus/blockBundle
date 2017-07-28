@@ -62,8 +62,8 @@ class BlockExtension extends \Twig_Extension
      * BlockExtension constructor.
      *
      * @param RegistryInterface $doctrine
-     * @param Router            $router
-     * @param string            $rootdir
+     * @param Router $router
+     * @param string $rootdir
      * @param SecurityExtension $twig
      */
     public function __construct(RegistryInterface $doctrine, Router $router, $rootdir = '', SecurityExtension $twig, Paginator $paginator, RequestStack $requestStack)
@@ -160,7 +160,6 @@ class BlockExtension extends \Twig_Extension
         }
 
         $textblock = $this->getDoctrine()->getRepository(TextBlock::class)->findOneBy(['slug' => $slug]);
-
         if (null === $textblock) {
 
             if (null !== $entityBlock) {
@@ -196,6 +195,7 @@ class BlockExtension extends \Twig_Extension
             $editData = sprintf('<text title="Slug: %s" class="%s textblock" data-href="%s">', $textblock->getSlug(), $textblock->getSlug(), $route);
             $returnText = sprintf($returnText, $editData . '%s' . '</text>');
         }
+
         $text = $textblock->getText();
         if (0 < $length) {
             $text = substr($text, 0, $length) . '...';
@@ -218,7 +218,6 @@ class BlockExtension extends \Twig_Extension
         }
 
         $stringBlock = $this->getDoctrine()->getRepository(StringBlock::class)->findOneBy(['slug' => $slug]);
-
         if (null === $stringBlock) {
 
             if (null !== $entityBlock) {
@@ -261,11 +260,11 @@ class BlockExtension extends \Twig_Extension
     }
 
     /**
-     * @param string           $slug
-     * @param int              $width
-     * @param int              $height
+     * @param string $slug
+     * @param int $width
+     * @param int $height
      * @param EntityBlock|null $entityBlock
-     * @param string           $classes
+     * @param string $classes
      *
      * @return string
      */
@@ -355,9 +354,9 @@ class BlockExtension extends \Twig_Extension
 
     /**
      * @param string|EntityBlockType $slug
-     * @param string                 $icon
-     * @param string                 $text
-     * @param string                 $color
+     * @param string $icon
+     * @param string $text
+     * @param string $color
      *
      * @return string
      */
@@ -424,8 +423,8 @@ class BlockExtension extends \Twig_Extension
 
     /**
      * @param string $type
-     * @param int    $limit
-     * @param int    $offset
+     * @param int $limit
+     * @param int $offset
      *
      * @return \Doctrine\Common\Collections\ArrayCollection|EntityBlock[]
      */
@@ -503,11 +502,11 @@ class BlockExtension extends \Twig_Extension
     }
 
     /**
-     * @param string      $slug
-     * @param array       $options
-     * @param string      $default
+     * @param string $slug
+     * @param array $options
+     * @param string $default
      * @param EntityBlock $entityBlock
-     * @param bool        $raw
+     * @param bool $raw
      * @return string
      */
     public function getOptionBlock($slug, $options, $default, $entityBlock = null, $raw = false)
@@ -567,7 +566,7 @@ class BlockExtension extends \Twig_Extension
 
     /**
      * @param EntityBlock $entityBlock
-     * @param int|string  $count
+     * @param int|string $count
      *
      * @return EntityBlock
      */
@@ -590,10 +589,10 @@ class BlockExtension extends \Twig_Extension
      * Resize an image and copy it
      *
      * @param resource $src_img
-     * @param string   $mimeType
-     * @param int      $new_width
-     * @param int      $new_height
-     * @param string   $moveTo
+     * @param string $mimeType
+     * @param int $new_width
+     * @param int $new_height
+     * @param string $moveTo
      */
     private function resizeImage($src_img, $mimeType, $new_width, $new_height, $moveTo)
     {
