@@ -545,6 +545,10 @@ class BlockExtension extends \Twig_Extension
 
             $this->getDoctrine()->getManager()->persist($optionBlock);
             $this->getDoctrine()->getManager()->flush();
+        } else if( $optionBlock->getOptions() !== $options ){
+            $optionBlock->setOptions($options);
+            $this->getDoctrine()->getManager()->persist($optionBlock);
+            $this->getDoctrine()->getManager()->flush();
         }
 
 
