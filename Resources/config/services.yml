@@ -5,7 +5,7 @@ parameters:
 services:
     pluetzner_block.menu_builder:
         class: Pluetzner\BlockBundle\Menu\Builder
-        arguments: ["@knp_menu.factory", '@security.authorization_checker', '@security.token_storage', '@doctrine']
+        arguments: ["@knp_menu.factory", '@security.authorization_checker', '@security.token_storage', '@doctrine', '@event_dispatcher']
     pluetzner_block.menu_builder_view:
         class: Knp\Menu\MenuItem
         factory: ["@pluetzner_block.menu_builder", navMenu]

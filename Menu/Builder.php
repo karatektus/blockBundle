@@ -12,6 +12,8 @@ namespace Pluetzner\BlockBundle\Menu;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\Matcher\MatcherInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
@@ -38,14 +40,20 @@ class Builder
     private $doctrine;
 
     /**
+     * @var EventDispatcher
+     */
+    private $eventDispatcher;
+
+    /**
      * @param FactoryInterface $factory
      */
-    public function __construct(FactoryInterface $factory, AuthorizationChecker $authorizationChecker, TokenStorage $tokenStorage, Registry $doctrine)
+    public function __construct(FactoryInterface $factory, AuthorizationChecker $authorizationChecker, TokenStorage $tokenStorage, Registry $doctrine, EventDispatcherInterface $eventDispatcher)
     {
         $this->factory = $factory;
         $this->authorizationChecker = $authorizationChecker;
         $this->tokenStorage = $tokenStorage;
         $this->doctrine = $doctrine;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -80,6 +88,13 @@ class Builder
         return $this->doctrine;
     }
 
+    /**
+     * @return EventDispatcher
+     */
+    public function getEventDispatcher()
+    {
+        return $this->eventDispatcher;
+    }
 
     /**
      * @param MatcherInterface $matcher
@@ -100,7 +115,7 @@ class Builder
         $usermenu->addChild('Profil', array('route' => 'pluetzner_block_user_show_1'));
         $usermenu->addChild('Logout', array('route' => 'fos_user_security_logout'));
         if ($this->getAuthorizationChecker()->isGranted("ROLE_ADMIN")) {
-            $usermenu->addChild('Benutzerübersicht', array('route'=> 'pluetzner_block_user_index'));
+            $usermenu->addChild('Benutzerübersicht', array('route' => 'pluetzner_block_user_index'));
         }
         return $menu;
     }
@@ -119,6 +134,10 @@ class Builder
             $textBlockMenu = $menu->addChild("Textblöcke", ['route' => 'pluetzner_block_textblock_index']);
             $imageBlockMenu = $menu->addChild("Bildblöcke", ['route' => 'pluetzner_block_imageblock_index']);
         }
+        $this->getEventDispatcher()->dispatch(
+            ConfigureAdminMenuEvent::CONFIGURE,
+            new ConfigureAdminMenuEvent($this->getFactory(), $menu)
+        );
         return $menu;
     }
 
