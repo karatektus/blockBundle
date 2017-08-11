@@ -12,6 +12,7 @@ namespace Pluetzner\BlockBundle\Menu;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\Matcher\MatcherInterface;
+use Pluetzner\BlockBundle\Event\ConfigureAdminMenuEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
