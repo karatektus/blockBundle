@@ -49,7 +49,7 @@ class OptionBlock
     /**
      * @var EntityBlock
      *
-     * @ORM\ManyToOne(targetEntity="Pluetzner\BlockBundle\Entity\EntityBlock", inversedBy="optionBlocks")
+     * @ORM\ManyToOne(targetEntity="Pluetzner\BlockBundle\Entity\EntityBlock", inversedBy="optionBlock")
      */
     private $entityBlock;
 
