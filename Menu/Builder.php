@@ -13,6 +13,7 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\Matcher\MatcherInterface;
 use Pluetzner\BlockBundle\Event\ConfigureAdminMenuEvent;
+use Pluetzner\BlockBundle\Event\ConfigureAdminUserMenuEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
@@ -117,6 +118,11 @@ class Builder
         $usermenu->addChild('Logout', array('route' => 'fos_user_security_logout'));
         if ($this->getAuthorizationChecker()->isGranted("ROLE_ADMIN")) {
             $usermenu->addChild('Benutzerübersicht', array('route' => 'pluetzner_block_user_index'));
+
+            $this->getEventDispatcher()->dispatch(
+                ConfigureAdminUserMenuEvent::CONFIGURE,
+                new ConfigureAdminUserMenuEvent($this->getFactory(), $usermenu)
+            );
         }
         return $menu;
     }

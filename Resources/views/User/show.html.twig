@@ -1,4 +1,4 @@
-{% extends '@Admin/_layout/base.html.twig' %}
+{% extends '@PluetznerBlock/_layout/base.html.twig' %}
 {% block h1 %}
     Benutzer
     <small>Benutzerdaten</small>
@@ -16,9 +16,9 @@
                         </div>
                         <div class="actions">
                             <a class="btn btn-circle btn-icon-only btn-default"
-                               href="{{ path("admin_user_edit_1", {"id":user.id}) }}"
+                               href="{{ path("pluetzner_block_user_edit_1", {"id":user.id}) }}"
                                class="text-warning">{{ 'edit'|icon }}
-                            </a>
+                                Bearbeiten
                             </a>
                         </div>
 
@@ -29,7 +29,7 @@
                             <tbody>
                             <tr>
                                 <th class="text-right">Passwort</th>
-                                <td><a href="{{ path("admin_user_editpassword") }}">Jetzt ändern &raquo;</a></td>
+                                <td><a href="{{ path("pluetzner_block_user_editpassword") }}">Jetzt ändern &raquo;</a></td>
                             </tr>
                             </tbody>
                         </table>

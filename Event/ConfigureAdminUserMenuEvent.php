@@ -7,12 +7,12 @@ use Knp\Menu\ItemInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * Class ConfigureAdminMenuEvent
+ * Class ConfigureAdminUserMenuEvent
  * @package Pluetzner\BlockBundle\Event
  */
-class ConfigureAdminMenuEvent extends Event
+class ConfigureAdminUserMenuEvent extends Event
 {
-    const CONFIGURE = 'pluetzner.admin_menu_configure';
+    const CONFIGURE = 'pluetzner.admin_user_menu_configure';
 
     private $factory;
     private $menu;
