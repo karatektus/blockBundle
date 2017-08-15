@@ -80,13 +80,7 @@ output='/compiled/js/core.js' %}
 <script src="{{ asset_url }}" type="text/javascript"></script>
 {% endjavascripts %}
 
-
-<script type="text/javascript">
-    $(document).ready(function () {
-        {% block documentready %}{% endblock %}
-    });
-
-</script>
-
+{% block javascript %}
+{% endblock %}
 </body>
 </html>
