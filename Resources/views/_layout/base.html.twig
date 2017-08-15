@@ -23,6 +23,8 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet"
           type="text/css"/>
 
+    <link href="{{ asset('bundles/pluetznerblock/fonts/font-awesome.min.css') }}" rel="stylesheet"
+          type="text/css"/>
 
     {% block stylesheets %}
         {% stylesheets '@PluetznerBlockBundle/Resources/public/css/*' filter='cssrewrite' %}
@@ -61,7 +63,7 @@
 </div>
 <footer class="navbar-fixed-bottom">
     <div class="container">
-        <div class="page-footer-inner"> 2017 © Paul Lützner</div>
+        <div class="page-footer-inner"></div>
     </div>
 </footer>
 <div class="scroll-to-top" style="display: none;">
