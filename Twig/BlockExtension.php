@@ -316,7 +316,6 @@ class BlockExtension extends \Twig_Extension
             'height' => $height,
             'width' => $width,
             '_type' => $guesser->guess($imageBlock->getMimeType())
-
         ]);
 
         $imagePath = sprintf('%s/../web%s', $this->getRootdir(), $imageRoute);

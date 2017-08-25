@@ -138,8 +138,10 @@ class Builder
 
         //$categoryMenu = $menu->addChild("Kategorien", array('route' => 'pm_core_category_index'));
         if ($this->getAuthorizationChecker()->isGranted("ROLE_ADMIN_DEVELOPER")) {
-            $textBlockMenu = $menu->addChild("Textblöcke", ['route' => 'pluetzner_block_textblock_index']);
-            $imageBlockMenu = $menu->addChild("Bildblöcke", ['route' => 'pluetzner_block_imageblock_index']);
+            $blocks = $menu->addChild('Blocks');
+            $textBlockMenu = $blocks->addChild("Textblocks", ['route' => 'pluetzner_block_textblock_index']);
+            $stringBlockMenu = $blocks->addChild("Stringblocks", ['route' => 'pluetzner_block_stringblock_index']);
+            $imageBlockMenu = $blocks->addChild("Imageblocks", ['route' => 'pluetzner_block_imageblock_index']);
         }
         $this->getEventDispatcher()->dispatch(
             ConfigureAdminMenuEvent::CONFIGURE,

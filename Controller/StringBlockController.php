@@ -27,7 +27,7 @@ class StringBlockController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $textblocks = $this->getDoctrine()->getRepository(TextBlock::class)->findBy(['deleted' => false, 'entityBlock' => null]);
+        $textblocks = $this->getDoctrine()->getRepository(StringBlock::class)->findBy(['deleted' => false, 'entityBlock' => null]);
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
