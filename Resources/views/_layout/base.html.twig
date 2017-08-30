@@ -39,15 +39,16 @@
 
 {% include "@PluetznerBlock/_layout/app_header.html.twig" %}
 
+
 <div class="container">
 
     {% block messages %}
         {% set messages = app.session.flashBag.keys() %}
         {% if messages %}
             <div class="row">
-                <div class="col-md-12">
+                <div class="alertmessages col-xs-12">
                     {% for type in messages %}
-                        <div class="note note-{% if 'error' == type %}danger{% else %}{{ type }}{% endif %}">{{ app.session.flashBag.get(type)|join(' ') }}</div>
+                        <div class="alert alert-{% if 'error' == type %}danger{% else %}{{ type }}{% endif %}" role="alert">{{ app.session.flashBag.get(type)|join(' ') }}</div>
                     {% endfor %}
                 </div>
             </div>
