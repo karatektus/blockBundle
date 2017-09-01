@@ -353,7 +353,7 @@ class StringBlockController extends Controller
      */
     public function deleteAction($id)
     {
-        $textblock = $this->getDoctrine()->getRepository(TextBlock::class)->find(intval($id));
+        $textblock = $this->getDoctrine()->getRepository(StringBlock::class)->find(intval($id));
         if (null === $textblock || true === $textblock->isDeleted()) {
             throw $this->createNotFoundException();
         }
@@ -365,8 +365,8 @@ class StringBlockController extends Controller
         $manager->persist($textblock);
         $manager->flush();
 
-        $this->get('session')->getFlashBag()->add('success', 'Textblock erfolgreich gelöscht.');
+        $this->get('session')->getFlashBag()->add('success', 'Stringblock erfolgreich gelöscht.');
 
-        return $this->redirect($this->generateUrl('pluetzner_block_textblock_index'));
+        return $this->redirect($this->generateUrl('pluetzner_block_stringblock_index'));
     }
 }

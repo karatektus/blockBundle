@@ -39,15 +39,15 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for textblock in pagination %}
+                    {% for stringblock in pagination %}
                         <tr>
                             <td>
-                                {{ textblock.slug }}
+                                {{ stringblock.slug }}
                             </td>
-                            <td>{{ textblock.text }}</td>
+                            <td>{{ stringblock.text }}</td>
                             <td class="text-right">
-                                {{ buttonBlock(textblock.slug, 'edit', 'edit') }}
-                                <a href="{{ path("pluetzner_block_textblock_delete", {"id":textblock.id}) }}"
+                                {{ buttonBlock(stringblock.slug, 'edit', 'edit') }}
+                                <a href="{{ path("pluetzner_block_stringblock_delete", {"id":stringblock.id}) }}"
                                    class="text-danger">{{ 'trash'|icon }}
                                     Löschen</a>
                             </td>
@@ -55,7 +55,7 @@
                     {% endfor %}
                     </tbody>
                 </table>
-                <a class="btn btn-primary" href="{{ path("pluetzner_block_textblock_edit") }}">+ Hinzufügen</a>
+                <a class="btn btn-primary" href="{{ path("pluetzner_block_stringblock_edit") }}">+ Hinzufügen</a>
                 <div class="navigation">
                     {{ knp_pagination_render(pagination) }}
                 </div>
