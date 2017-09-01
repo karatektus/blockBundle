@@ -1,6 +1,6 @@
 parameters:
-    locale: de
-    locales: [de, en]
+    locale: en
+    locales: %pl__block.configuration.locales_available%
 
 services:
     pluetzner_block.menu_builder:

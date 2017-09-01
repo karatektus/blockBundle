@@ -6,48 +6,41 @@
 {% block body %}
     <div class="row">
         <div class="col-sm-12">
-            <div class="portlet light">
-                <div class="portlet-title tabbable-line">
-                    <div class="caption caption-md">
-                            <span class="caption-subject font-blue-hoki bold uppercase">
-                            Imageblocks
-                        </span>
-                    </div>
-
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    Imageblocks
                 </div>
 
-                <div class="portlet-body">
-                    <table class="table-striped table-hover table">
-                        <thead>
+                <table class="table-striped table-hover table">
+                    <thead>
+                    <tr>
+                        <th>Slug</th>
+                        <th>Image</th>
+                        <th class="text-right">Optionen</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for image in pagination %}
                         <tr>
-                            <th>Slug</th>
-                            <th>Image</th>
-                            <th class="text-right">Optionen</th>
+                            <td>
+                                {{ image.slug }}
+                            </td>
+                            <td>{{ imageBlock(image.slug, 100, 100) }}</td>
+                            <td class="text-right">
+                                <a href="{{ path("pluetzner_block_imageblock_edit_1", {"id":image.id}) }}"
+                                   class="text-warning">{{ 'edit'|icon }}
+                                    Bearbeiten</a>
+                                <a href="{{ path("pluetzner_block_imageblock_delete", {"id":image.id}) }}"
+                                   class="text-danger">{{ 'trash'|icon }}
+                                    Löschen</a>
+                            </td>
                         </tr>
-                        </thead>
-                        <tbody>
-                        {% for image in pagination %}
-                            <tr>
-                                <td>
-                                    {{ image.slug }}
-                                </td>
-                                <td>{{ imageBlock(image.slug, 100, 100) }}</td>
-                                <td class="text-right">
-                                    <a href="{{ path("pluetzner_block_imageblock_edit_1", {"id":image.id}) }}"
-                                       class="text-warning">{{ 'edit'|icon }}
-                                        Bearbeiten</a>
-                                    <a href="{{ path("pluetzner_block_imageblock_delete", {"id":image.id}) }}"
-                                       class="text-danger">{{ 'trash'|icon }}
-                                        Löschen</a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                    <a class="btn btn-primary" href="{{ path("pluetzner_block_imageblock_edit") }}">+ Hinzufügen</a>
-                    <div class="navigation">
-                        {{ knp_pagination_render(pagination) }}
-                    </div>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <a class="btn btn-primary" href="{{ path("pluetzner_block_imageblock_edit") }}">+ Hinzufügen</a>
+                <div class="navigation">
+                    {{ knp_pagination_render(pagination) }}
                 </div>
             </div>
         </div>

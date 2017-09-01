@@ -27,6 +27,9 @@
     "symfony/monolog-bundle": "^3.1.0",
     "twig/twig": "^1.0||^2.0"
   },
+  "suggest": {
+        "luiggio/excelbundle": "To export and import the translation Data"
+  },
   "extra": {
     "branch-alias": null
   }

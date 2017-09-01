@@ -6,46 +6,57 @@
 {% block body %}
     <div class="row">
         <div class="col-sm-12">
-            <div class="portlet light">
-                <div class="portlet-title tabbable-line">
-                    <div class="caption caption-md">
-                            <span class="caption-subject font-blue-hoki bold uppercase">
-                            Textblocks
-                        </span>
-                    </div>
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    Textblocks
+                    {% if export == true %}
+                        <div class="btn-group pull-right" aria-label="...">
+                            <a href="{{ path('pluetzner_block_textblock_export') }}" type="button" class="btn btn-default"><i class="fa fa-sign-out"></i> Export</a>
 
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-sign-in"></i> Import
+                                    <span class="caret"></span>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <div class="col-xs-12">
+                                        {{ form(form) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="clearfix"></span>
+                    {% endif %}
                 </div>
 
-                <div class="portlet-body">
-                    <table class="table-striped table-hover table">
-                        <thead>
+                <table class="table-striped table-hover table">
+                    <thead>
+                    <tr>
+                        <th>Slug</th>
+                        <th>Text</th>
+                        <th class="text-right">Optionen</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for textblock in pagination %}
                         <tr>
-                            <th>Slug</th>
-                            <th>Text</th>
-                            <th class="text-right">Optionen</th>
+                            <td>
+                                {{ textblock.slug }}
+                            </td>
+                            <td>{{ textblock.text }}</td>
+                            <td class="text-right">
+                                {{ buttonBlock(textblock.slug, 'edit', 'edit') }}
+                                <a href="{{ path("pluetzner_block_textblock_delete", {"id":textblock.id}) }}"
+                                   class="text-danger">{{ 'trash'|icon }}
+                                    Löschen</a>
+                            </td>
                         </tr>
-                        </thead>
-                        <tbody>
-                        {% for textblock in pagination %}
-                            <tr>
-                                <td>
-                                    {{ textblock.slug }}
-                                </td>
-                                <td>{{ textblock.text }}</td>
-                                <td class="text-right">
-                                    {{ buttonBlock(textblock.slug, 'edit', 'edit') }}
-                                    <a href="{{ path("pluetzner_block_textblock_delete", {"id":textblock.id}) }}"
-                                       class="text-danger">{{ 'trash'|icon }}
-                                        Löschen</a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                    <a class="btn btn-primary" href="{{ path("pluetzner_block_textblock_edit") }}">+ Hinzufügen</a>
-                    <div class="navigation">
-                        {{ knp_pagination_render(pagination) }}
-                    </div>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <a class="btn btn-primary" href="{{ path("pluetzner_block_textblock_edit") }}">+ Hinzufügen</a>
+                <div class="navigation">
+                    {{ knp_pagination_render(pagination) }}
                 </div>
             </div>
         </div>

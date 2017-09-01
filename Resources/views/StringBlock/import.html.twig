@@ -1,0 +1,20 @@
+{% extends '@PluetznerBlock/_layout/base.html.twig' %}
+{% block h1 %}
+    Stringblocks
+    <small>Import</small>
+{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    Select the language file you want to upload
+                    <span class="clearfix"></span>
+                </div>
+                <div class="panel-body">
+                  {{ form(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

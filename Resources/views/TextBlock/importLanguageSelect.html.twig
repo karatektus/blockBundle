@@ -1,0 +1,21 @@
+{% extends '@PluetznerBlock/_layout/base.html.twig' %}
+{% block h1 %}
+    Textblocks
+    <small>Import</small>
+{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    Select languages you want to import
+                    <span class="clearfix"></span>
+                </div>
+                <div class="panel-body">
+                    <p class="text-danger">Beware: selected languages will be completely overwritten.</p>
+                  {{ form(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -23,6 +23,12 @@ class PluetznerBlockExtension extends Extension implements PrependExtensionInter
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
+        if (true === isset($config['locales_available']) && null !== $config['locales_available']) {
+            $container->setParameter('pl__block.configuration.locales_available', explode('|', $config['locales_available']));
+        } else {
+            $container->setParameter('pl__block.configuration.locales_available', 'en');
+        }
+
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
     }
