@@ -1,0 +1,38 @@
+{% extends '@PluetznerBlock/_layout/base.html.twig' %}
+{% block h1 %}
+    Entityblocks
+{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    Type: <strong>{{ type.slug }}</strong>
+                </div>
+
+                <table class="table-striped table-hover table">
+                    <thead>
+                    <tr>
+                        <th>Slug</th>
+                        <th>Content</th>
+                        <th class="text-right">Optionen</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for block in blocks %}
+                        <tr>
+                            <td>{{ block.slug }}</td>
+                            <td></td>
+                            <td>{{ buttonBlock(block.slug, 'edit', 'edit', true) }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <a class="btn btn-primary" href="{{ path("pluetzner_block_imageblock_edit") }}">+ Hinzufügen</a>
+                <div class="navigation">
+                    {{ knp_pagination_render(blocks) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

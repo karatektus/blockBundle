@@ -1,1 +1,9 @@
-body { padding-top: 70px; }
+body {
+    padding-top: 70px;
+}
+
+table {
+    table-layout: fixed;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}

@@ -9,6 +9,7 @@
 namespace Pluetzner\BlockBundle\Form;
 
 
+use Pluetzner\BlockBundle\Entity\ImageBlock;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -61,7 +62,8 @@ class ImageBlockFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'save_button' => true,
+            'data_class' => ImageBlock::class,
+            'save_button' => false,
         ]);
     }
 

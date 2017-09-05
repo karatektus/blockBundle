@@ -59,7 +59,6 @@ class EntityBlockType extends EntityBlockTypeModel
      */
     private $optionBlocks;
 
-
     /**
      * @var ArrayCollection|EntityBlock[]
      *

@@ -48,7 +48,7 @@ class StringBlockFormType extends AbstractTranslatableType
     {
         $resolver->setDefaults([
             'data_class' => 'Pluetzner\BlockBundle\Entity\StringBlock',
-            'save_button' => true,
+            'save_button' => false,
         ]);
         $this->configureTranslationOptions($resolver);
     }

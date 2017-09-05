@@ -2,7 +2,6 @@
 
 namespace Pluetzner\BlockBundle\Controller;
 
-use Pluetzner\BlockBundle\Entity\User;
 use Pluetzner\BlockBundle\Form\PasswordFormType;
 use Pluetzner\BlockBundle\Form\UserFormType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -30,7 +29,7 @@ class UserController extends Controller
     public function indexAction(Request $request)
     {
         $checker = $this->get('security.authorization_checker');
-        $qb = $this->getDoctrine()->getRepository(User::class)->createQueryBuilder("u");
+        $qb = $this->getDoctrine()->getRepository(get_class($this->getUser()))->createQueryBuilder("u");
         $qb
             ->where("u.enabled = 1");
 
@@ -62,7 +61,7 @@ class UserController extends Controller
         if (0 === $id) {
             $user = $this->getUser();
         } else {
-            $user = $this->getDoctrine()->getRepository("PMCoreBundle:User")->find(intval($id));
+            $user = $this->getDoctrine()->getRepository(get_class($this->getUser()))->find(intval($id));
         }
 
         return [

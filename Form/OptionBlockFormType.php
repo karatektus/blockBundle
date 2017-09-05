@@ -9,6 +9,7 @@
 namespace Pluetzner\BlockBundle\Form;
 
 
+use Pluetzner\BlockBundle\Entity\OptionBlock;
 use Simettric\DoctrineTranslatableFormBundle\Form\TranslatableTextType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -50,7 +51,8 @@ class OptionBlockFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'save_button' => true,
+            'data_class' => OptionBlock::class,
+            'save_button' => false,
             'choices' => [],
             'choices_as_values' => true,
         ]);

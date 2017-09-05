@@ -10,6 +10,7 @@ namespace Pluetzner\BlockBundle\Form;
 
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -25,7 +26,7 @@ class EntityBlockFormType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -37,7 +38,27 @@ class EntityBlockFormType extends AbstractType
             ->add("published", DateType::class, [
                 "label" => "Veröffentlichungsdatum:",
                 'widget' => 'single_text',
-            ]);
+            ])
+            ->add('stringBlocks', CollectionType::class, [
+                'label' => false,
+                'entry_type' => StringBlockFormType::class,
+                'entry_options' => ['label' => false],
+            ])
+            ->add('textBlocks', CollectionType::class, [
+                'label' => false,
+                'entry_type' => TextBlockFormType::class,
+                'entry_options' => ['label' => false],
+            ])
+            ->add('imageBlocks', CollectionType::class, [
+                'label' => false,
+                'entry_type' => ImageBlockFormType::class,
+                'entry_options' => ['label' => false],
+            ])/*
+            ->add('optionBlock', CollectionType::class, [
+                'label' => false,
+                'entry_type' => OptionBlockFormType::class,
+                'entry_options' => ['label' => false],
+            ])*/;
 
         if (true === $options['save_button']) {
             $builder->add('Speichern', SubmitType::class);

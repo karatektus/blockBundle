@@ -20,10 +20,43 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class EntityBlockController extends Controller
 {
+
     /**
      * @param Request $request
-     * @param string $type
-     * @param int $id
+     * @param string  $type
+     *
+     * @return array
+     *
+     * @Route("")
+     * @Template()
+     */
+    public function indexAction(Request $request, $type)
+    {
+        $entityType = $this->getDoctrine()->getRepository(EntityBlockType::class)->findOneBy(['slug' => $type]);
+
+        if (null === $entityType) {
+            throw $this->createNotFoundException();
+        }
+
+        $blocks = $entityType->getEntityBlocks();
+
+        $paginator = $this->get('knp_paginator');
+        $pagination = $paginator->paginate(
+            $blocks,
+            $request->get('page', 1),
+            30
+        );
+
+        return [
+            'type' => $entityType,
+            'blocks' => $pagination,
+        ];
+    }
+
+    /**
+     * @param Request $request
+     * @param string  $type
+     * @param int     $id
      *
      * @return array|Response
      *
@@ -44,15 +77,14 @@ class EntityBlockController extends Controller
             $entityBlock->setEntityBlockType($entityType);
         } else {
             $entityBlock = $this->getDoctrine()->getRepository(EntityBlock::class)->createQueryBuilder('e')
-                ->join('e.entityBlockType', 'type')
-                ->where('id = :id')
-                ->andWhere('type.slug = :slug')
+                ->where('e.id = :id')
+                ->andWhere('e.slug = :slug')
                 ->setParameters([
                     'id' => $id,
                     'slug' => $type,
                 ])
                 ->getQuery()
-                ->getResult();
+                ->getSingleResult();
 
         }
 
@@ -73,6 +105,7 @@ class EntityBlockController extends Controller
 
         return [
             'form' => $form->createView(),
+            'locales' => $this->getParameter('pl__block.configuration.locales_available')
         ];
     }
 

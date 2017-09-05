@@ -12,6 +12,7 @@ namespace Pluetzner\BlockBundle\Menu;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\Matcher\MatcherInterface;
+use Pluetzner\BlockBundle\Entity\EntityBlockType;
 use Pluetzner\BlockBundle\Event\ConfigureAdminMenuEvent;
 use Pluetzner\BlockBundle\Event\ConfigureAdminUserMenuEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -142,6 +143,14 @@ class Builder
             $textBlockMenu = $blocks->addChild("Textblocks", ['route' => 'pluetzner_block_textblock_index']);
             $stringBlockMenu = $blocks->addChild("Stringblocks", ['route' => 'pluetzner_block_stringblock_index']);
             $imageBlockMenu = $blocks->addChild("Imageblocks", ['route' => 'pluetzner_block_imageblock_index']);
+
+            $entityBlockTypes = $this->getDoctrine()->getRepository(EntityBlockType::class)->findAll();
+            if (0 < count($entityBlockTypes)) {
+                $entityBlockMenu = $menu->addChild('Entityblocks');
+                foreach ($entityBlockTypes as $type) {
+                    $entityBlockMenu->addChild($type->getSlug(), ['route' => 'pluetzner_block_entityblock_index', 'routeParameters' => ['type' => $type->getSlug()]]);
+                }
+            }
         }
         $this->getEventDispatcher()->dispatch(
             ConfigureAdminMenuEvent::CONFIGURE,

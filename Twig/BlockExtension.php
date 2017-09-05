@@ -62,8 +62,8 @@ class BlockExtension extends \Twig_Extension
      * BlockExtension constructor.
      *
      * @param RegistryInterface $doctrine
-     * @param Router $router
-     * @param string $rootdir
+     * @param Router            $router
+     * @param string            $rootdir
      * @param SecurityExtension $twig
      */
     public function __construct(RegistryInterface $doctrine, Router $router, $rootdir = '', SecurityExtension $twig, Paginator $paginator, RequestStack $requestStack)
@@ -260,11 +260,11 @@ class BlockExtension extends \Twig_Extension
     }
 
     /**
-     * @param string $slug
-     * @param int $width
-     * @param int $height
+     * @param string           $slug
+     * @param int              $width
+     * @param int              $height
      * @param EntityBlock|null $entityBlock
-     * @param string $classes
+     * @param string           $classes
      *
      * @return string
      */
@@ -353,11 +353,13 @@ class BlockExtension extends \Twig_Extension
 
     /**
      * @param string|EntityBlockType $slug
-     * @param string $icon
-     * @param string $text
-     * @param string $color
+     * @param string                 $icon
+     * @param string                 $text
+     * @param null|string|boolean    $entityBlock
+     * @param string                 $wrap
      *
      * @return string
+     * @internal param string $color
      */
     public function getButtonBlock($slug, $icon = 'edit', $text = '', $entityBlock = null, $wrap = '%s')
     {
@@ -369,6 +371,14 @@ class BlockExtension extends \Twig_Extension
 
         $editData = '';
         if (null !== $entityBlock) {
+            if(true === $entityBlock){
+                $entityBlock = $this->getDoctrine()->getRepository(EntityBlock::class)->findOneBy(['slug' => $slug]);
+                if(null !== $entityBlock){
+                    $route = $this->getRouter()->generate('pluetzner_block_entityblock_editajax', ['type' => $slug, 'id' => $entityBlock->getId()]);
+                    return sprintf("<a href='javascript:void(0)' data-href='%s' class='%s' data-slug='%s'>%s%s</a>", $route, $classes, $slug, $iconHtml, $text);
+                }
+                return 'error';
+            }
             $slug = sprintf('%s_%s_%s', $entityBlock->getEntityBlockType()->getSlug(), $entityBlock->getId(), $slug);
         } else {
             $type = $this->getDoctrine()->getRepository(EntityBlockType::class)->findOneBy(['slug' => $slug]);
@@ -422,8 +432,8 @@ class BlockExtension extends \Twig_Extension
 
     /**
      * @param string $type
-     * @param int $limit
-     * @param int $offset
+     * @param int    $limit
+     * @param int    $offset
      *
      * @return \Doctrine\Common\Collections\ArrayCollection|EntityBlock[]
      */
@@ -501,11 +511,11 @@ class BlockExtension extends \Twig_Extension
     }
 
     /**
-     * @param string $slug
-     * @param array $options
-     * @param string $default
+     * @param string      $slug
+     * @param array       $options
+     * @param string      $default
      * @param EntityBlock $entityBlock
-     * @param bool $raw
+     * @param bool        $raw
      * @return string
      */
     public function getOptionBlock($slug, $options, $default, $entityBlock = null, $raw = false)
@@ -544,10 +554,12 @@ class BlockExtension extends \Twig_Extension
 
             $this->getDoctrine()->getManager()->persist($optionBlock);
             $this->getDoctrine()->getManager()->flush();
-        } else if( $optionBlock->getOptions() !== $options ){
-            $optionBlock->setOptions($options);
-            $this->getDoctrine()->getManager()->persist($optionBlock);
-            $this->getDoctrine()->getManager()->flush();
+        } else {
+            if ($optionBlock->getOptions() !== $options) {
+                $optionBlock->setOptions($options);
+                $this->getDoctrine()->getManager()->persist($optionBlock);
+                $this->getDoctrine()->getManager()->flush();
+            }
         }
 
 
@@ -569,7 +581,7 @@ class BlockExtension extends \Twig_Extension
 
     /**
      * @param EntityBlock $entityBlock
-     * @param int|string $count
+     * @param int|string  $count
      *
      * @return EntityBlock
      */
@@ -592,10 +604,10 @@ class BlockExtension extends \Twig_Extension
      * Resize an image and copy it
      *
      * @param resource $src_img
-     * @param string $mimeType
-     * @param int $new_width
-     * @param int $new_height
-     * @param string $moveTo
+     * @param string   $mimeType
+     * @param int      $new_width
+     * @param int      $new_height
+     * @param string   $moveTo
      */
     private function resizeImage($src_img, $mimeType, $new_width, $new_height, $moveTo)
     {

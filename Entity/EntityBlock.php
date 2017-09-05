@@ -28,6 +28,13 @@ class EntityBlock extends EntityBlockModel
     private $id;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="order_id", type="integer")
+     */
+    private $orderId;
+
+    /**
      * @var EntityBlockType
      *
      * @ORM\ManyToOne(targetEntity="Pluetzner\BlockBundle\Entity\EntityBlockType", inversedBy="entityBlocks")
@@ -109,6 +116,24 @@ class EntityBlock extends EntityBlockModel
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOrderId()
+    {
+        return $this->orderId;
+    }
+
+    /**
+     * @param int $orderId
+     * @return EntityBlock
+     */
+    public function setOrderId($orderId)
+    {
+        $this->orderId = $orderId;
+        return $this;
     }
 
     /**

@@ -29,14 +29,14 @@
                         {% for user in pagination %}
                             <tr>
                                 <td>
-                                    <a href="{{ path('admin_user_show', {'id': user.id}) }}">{{ user.username }}</a>
+                                    <a href="{{ path('pluetzner_block_user_show', {'id': user.id}) }}">{{ user.username }}</a>
                                 </td>
-                                <td>{{ user.function }}</td>
+                                <td>{{ user.roles|join(' | ') }}</td>
                                 <td class="text-right">
-                                    <a href="{{ path("admin_user_edit_1", {"id":user.id}) }}"
+                                    <a href="{{ path("pluetzner_block_user_edit_1", {"id":user.id}) }}"
                                        class="text-warning">{{ 'edit'|icon }}
                                         Bearbeiten</a>
-                                    <a href="{{ path("admin_user_delete", {"id":user.id}) }}"
+                                    <a href="{{ path("pluetzner_block_user_delete", {"id":user.id}) }}"
                                        class="text-danger">{{ 'trash'|icon }}
                                         Löschen</a>
                                 </td>
@@ -44,7 +44,7 @@
                         {% endfor %}
                         </tbody>
                     </table>
-                    <a class="btn btn-primary" href="{{ path("admin_user_edit") }}">+ Hinzufügen</a>
+                    <a class="btn btn-primary" href="{{ path("pluetzner_block_user_edit") }}">+ Hinzufügen</a>
                     <div class="navigation">
                         {{ knp_pagination_render(pagination) }}
                     </div>

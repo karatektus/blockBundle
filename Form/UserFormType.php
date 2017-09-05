@@ -46,8 +46,6 @@ class UserFormType extends AbstractType
             $roles['Admin'] = 'ROLE_ADMIN';
         }
 
-
-
         /** @var User $user */
         $user = $builder->getData();
 

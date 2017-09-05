@@ -1,1 +1,69 @@
-{{ form(form) }}
+{{ form_start(form) }}
+{{ form_row(form.title) }}
+{{ form_row(form.published) }}
+
+<ul class="nav nav-tabs">
+    {% for locale in locales %}
+        <li role="presentation" {{ loop.first ? 'class="active"' }}>
+            <a aria-controls="trans-field-text-en" role="tab" data-toggle="tab" href="#trans-field-text-{{ locale }}">{{ locale }}</a>
+        </li>
+    {% endfor %}
+</ul>
+
+<div class="tab-content" style="margin-top: 10px">
+    {% for locale in locales %}
+        <div role="tabpanel" class="tab-pane {{ loop.first ? 'active' }}" id="trans-field-text-{{ locale }}">
+
+            {% for key, stringBlock in form.stringBlocks %}
+                <div class="form-group">
+                    <label class="control-label required">{{ stringBlock.vars.value.slug }}</label>
+                    {{ form_widget(stringBlock.parent.children[key]['text'].children[locale]) }}
+                </div>
+            {% endfor %}
+
+            {% for key, textBlock in form.textBlocks %}
+                <div class="form-group">
+                    <label class="control-label required">{{ textBlock.vars.value.slug }}</label>
+                    {{ form_widget(textBlock.parent.children[key]['text'].children[locale]) }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+    {% if form.imageBlocks|length > 0 %}
+        <h3>ImageBlocks</h3>
+        <table width="100" class="table table-striped">
+            <tr>
+                <th width="50%">Form</th>
+                <th width="50%">Preview</th>
+            </tr>
+            {% for key, imageBlock in form.imageBlocks %}
+                <tr>
+                    <td>
+                        <label class="control-label required">{{ imageBlock.vars.value.slug }}</label>
+                        <div class="form-group">
+
+                            {{ form_widget(imageBlock.parent.children[key]['uploadedFile']) }}
+                        </div>
+                    </td>
+                    <td>
+                        {{ imageBlock(imageBlock.vars.value.slug, 150, 0) }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+{#
+    {% if form.optionBlock|length > 0 %}
+        <h3>Options</h3>
+        {% for key, optionBlock in form.optionBlock %}
+            <div class="form-group">
+                <label class="control-label required">{{ optionBlock.vars.value.slug }}</label>
+                {{ form_widget(optionBlock.parent.children[key]['value']) }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    #}
+
+</div>
+{{ form_end(form) }}
