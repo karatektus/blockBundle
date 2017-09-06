@@ -38,7 +38,7 @@ class EntityBlockController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $blocks = $entityType->getEntityBlocks();
+        $blocks = $this->getDoctrine()->getRepository(EntityBlock::class)->findAllUndeleted($entityType);
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
@@ -110,28 +110,57 @@ class EntityBlockController extends Controller
     }
 
     /**
+     * @param string  $type
+     * @param Request $request
+     *
+     * @Route("/updateOrder")
+     *
+     * @return Response
+     */
+    public function updateOrderAction(Request $request, $type)
+    {
+        $entityType = $this->getDoctrine()->getRepository(EntityBlockType::class)->findOneBy(['slug' => $type]);
+
+        $orderData = $request->get('orderData');
+        $orderData = array_flip($orderData);
+        if (null === $entityType) {
+            throw $this->createNotFoundException();
+        }
+
+        $entityBlocks = $this->getDoctrine()->getRepository(EntityBlock::class)->findAllUndeleted($entityType);
+
+        foreach ($entityBlocks as $entityBlock) {
+            $entityBlock->setOrderId($orderData[$entityBlock->getSlug()]);
+            $this->getDoctrine()->getManager()->persist($entityBlock);
+        }
+        $this->getDoctrine()->getManager()->flush();
+
+        return new Response(implode(' & ', $orderData), 200);
+    }
+
+    /**
      * @param int $id
      *
      * @Route("/{id}/delete")
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function deleteAction($id)
+    public function deleteAction($type, $id = 0)
     {
-        $textblock = $this->getDoctrine()->getRepository(TextBlock::class)->find(intval($id));
-        if (null === $textblock || true === $textblock->isDeleted()) {
+        $entityBlock = $this->getDoctrine()->getRepository(EntityBlock::class)->find(intval($id));
+        if (null === $entityBlock || true === $entityBlock->isDeleted()) {
             throw $this->createNotFoundException();
         }
 
-        $textblock->setDeleted(true);
+        $entityBlock->setDeleted(true);
 
         $manager = $this->getDoctrine()->getManager();
 
-        $manager->persist($textblock);
+        $manager->persist($entityBlock);
         $manager->flush();
 
-        $this->get('session')->getFlashBag()->add('success', 'Textblock erfolgreich gelöscht.');
+        $this->get('session')->getFlashBag()->add('success', 'EntityBlock successfully deleted.');
 
-        return $this->redirect($this->generateUrl('pluetzner_block_textblock_index'));
+        return $this->redirect($this->generateUrl('pluetzner_block_entityblock_index', ['type' => $type]));
     }
 }

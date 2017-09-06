@@ -17,6 +17,7 @@ class EntityBlockModel
     const ORDER_COUNT = 1;
     const ORDER_CREATED = 2;
     const ORDER_EDITED = 3;
+    const ORDER_ORDERID = 4;
 
     const DIRECTION_ASC = 0;
     const DIRECTION_DESC = 1;

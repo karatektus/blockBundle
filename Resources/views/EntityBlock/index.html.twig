@@ -10,29 +10,82 @@
                     Type: <strong>{{ type.slug }}</strong>
                 </div>
 
-                <table class="table-striped table-hover table">
-                    <thead>
-                    <tr>
-                        <th>Slug</th>
-                        <th>Content</th>
-                        <th class="text-right">Optionen</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for block in blocks %}
+                <div class="tablewrap">
+                    <table id="entityBlockTable" data-url="{{ path('pluetzner_block_entityblock_updateorder', {'type': type.slug}) }}" class="table-striped table-hover table">
+                        <thead>
                         <tr>
-                            <td>{{ block.slug }}</td>
-                            <td></td>
-                            <td>{{ buttonBlock(block.slug, 'edit', 'edit', true) }}</td>
+                            <th width="20%">Slug</th>
+                            <th width="60%">Content</th>
+                            <th width="20%" class="text-right">Optionen</th>
                         </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-                <a class="btn btn-primary" href="{{ path("pluetzner_block_imageblock_edit") }}">+ Hinzufügen</a>
-                <div class="navigation">
-                    {{ knp_pagination_render(blocks) }}
+                        </thead>
+                        <tbody>
+                        {% for block in blocks %}
+                            <tr>
+                                <td data-orderId="{{ block.orderId }}">{{ block.slug }}</td>
+                                <td>{{ block.stringBlocks|length }} x StringBlocks | {{ block.textBlocks|length }} x TextBlocks | {{ block.imageBlocks|length }} x ImageBlocks | {{ block.optionBlock|length }} x OptionBlocks</td>
+                                <td class="text-right">
+                                    {{ buttonBlock(block.slug, 'edit', 'edit', true) }}
+                                    <a class="text-danger approvable"
+                                       data-approve-message="Are you sure you want to delete {{ block.slug }}?"
+                                       href="{{ path('pluetzner_block_entityblock_delete', {'id': block.id, 'type': block.entityBlockType.slug}) }}"
+                                    >
+                                        <i class="fa fa-times"></i> delete
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="entityBlockTableOverlay">
+                        <div class="circle-loader">
+                            <div class="checkmark draw"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="navigation">
+                        {{ knp_pagination_render(blocks) }}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var tablebody = $("#entityBlockTable>tbody");
+            tablebody.sortable({
+                update: function (event, ui) {
+                    var overlay = $(".entityBlockTableOverlay");
+                    overlay.css({"display":"block"});
+                    overlay.removeClass('load-complete');
+                    $('.checkmark').hide();
+                    var $i = tablebody.children().length;
+                    var data = {};
+                    tablebody.children().each(function () {
+                        $(this).children().first().attr('data-orderId', $i);
+                        data[$i] = $(this).children().first().text();
+                        $i--;
+                    });
+
+                    $.post({
+                        'url': $("#entityBlockTable").data("url"),
+                        'data': {'orderData': data},
+                        'success': function (response) {
+                            console.log(response);
+                            $('.circle-loader').addClass('load-complete');
+                            $('.checkmark').show();
+                            setTimeout(function () {
+                                overlay.fadeOut("slow");
+                            }, 500)
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
 {% endblock %}

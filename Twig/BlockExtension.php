@@ -371,9 +371,9 @@ class BlockExtension extends \Twig_Extension
 
         $editData = '';
         if (null !== $entityBlock) {
-            if(true === $entityBlock){
+            if (true === $entityBlock) {
                 $entityBlock = $this->getDoctrine()->getRepository(EntityBlock::class)->findOneBy(['slug' => $slug]);
-                if(null !== $entityBlock){
+                if (null !== $entityBlock) {
                     $route = $this->getRouter()->generate('pluetzner_block_entityblock_editajax', ['type' => $slug, 'id' => $entityBlock->getId()]);
                     return sprintf("<a href='javascript:void(0)' data-href='%s' class='%s' data-slug='%s'>%s%s</a>", $route, $classes, $slug, $iconHtml, $text);
                 }
@@ -437,7 +437,7 @@ class BlockExtension extends \Twig_Extension
      *
      * @return \Doctrine\Common\Collections\ArrayCollection|EntityBlock[]
      */
-    public function getEntityBlocks($type, $limit = 0, $offset = 0, $search = null, $order = EntityBlock::ORDER_PUBLISHED, $direction = EntityBlock::DIRECTION_ASC)
+    public function getEntityBlocks($type, $limit = 0, $offset = 0, $search = null, $order = EntityBlock::ORDER_ORDERID, $direction = EntityBlock::DIRECTION_DESC)
     {
         $blockType = $this->getDoctrine()->getRepository(EntityBlockType::class)->findOneBy(['slug' => $type]);
 
@@ -463,9 +463,11 @@ class BlockExtension extends \Twig_Extension
             case EntityBlock::ORDER_EDITED:
                 $orderBy = 'edited';
                 break;
-            default:
+            case EntityBlock::ORDER_PUBLISHED:
                 $orderBy = 'published';
                 break;
+            default:
+                $orderBy = 'orderId';
         }
 
         $qb = $this->getDoctrine()->getRepository(EntityBlock::class)->createQueryBuilder('b');

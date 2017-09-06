@@ -4,6 +4,7 @@ namespace Pluetzner\BlockBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Pluetzner\BlockBundle\Entity\EntityBlock;
+use Pluetzner\BlockBundle\Entity\EntityBlockType;
 
 /**
  * EntityBlockRepository
@@ -36,5 +37,30 @@ class EntityBlockRepository extends EntityRepository
             ->getOneOrNullResult();
 
         return $eb;
+    }
+
+    /**
+     * @param string|EntityBlock $type
+     *
+     * @return EntityBlock[]
+     */
+    public function findAllUndeleted($type = null){
+        $qb = $this->createQueryBuilder('eb');
+        $blocks = $qb
+            ->join('eb.entityBlockType', 'entityType')
+            ->where('eb.deleted = 0')
+            ->orderBy('eb.orderId', 'DESC');
+
+        if(true === is_string($type)) {
+            $blocks
+                ->andWhere('entityType.slug = :type')
+                ->setParameter('type', $type);
+        } elseif (EntityBlockType::class === get_class($type)) {
+              $blocks
+                ->andWhere('entityType.slug = :type')
+                ->setParameter('type', $type->getSlug());
+        }
+
+        return $blocks->getQuery()->getResult();
     }
 }
