@@ -88,7 +88,7 @@ class EntityBlockController extends Controller
             $entityBlock = new EntityBlock();
             $entityBlock
                 ->setEntityBlockType($entityType)
-                ->setCount($count + 1);
+                ->setOrderId($count + 1);
 
         } else {
             $entityBlock = $this->getDoctrine()->getRepository(EntityBlock::class)->createQueryBuilder('e')

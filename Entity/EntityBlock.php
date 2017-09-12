@@ -150,6 +150,7 @@ class EntityBlock extends EntityBlockModel
     public function setEntityBlockType($entityBlockType)
     {
         $this->entityBlockType = $entityBlockType;
+        return $this;
     }
 
     /**
