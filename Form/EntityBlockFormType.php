@@ -32,11 +32,11 @@ class EntityBlockFormType extends AbstractType
     {
         $builder
             ->add("title", TextType::class, [
-                "label" => "Titel:",
+                "label" => "Title:",
                 "required" => true
             ])
             ->add("published", DateType::class, [
-                "label" => "Veröffentlichungsdatum:",
+                "label" => "Releasedate:",
                 'widget' => 'single_text',
             ])
             ->add('stringBlocks', CollectionType::class, [

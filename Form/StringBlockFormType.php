@@ -32,7 +32,7 @@ class StringBlockFormType extends AbstractTranslatableType
         if (true === $options['save_button']) {
             $builder
                 ->add("slug", TextType::class, [
-                    "label" => "Abkürzung:",
+                    "label" => "slug:",
                     "required" => true
                 ]);
         }
@@ -40,7 +40,7 @@ class StringBlockFormType extends AbstractTranslatableType
             ->add("text", TranslatableTextType::class);
 
         if (true === $options['save_button']) {
-            $builder->add('Speichern', SubmitType::class);
+            $builder->add('Save', SubmitType::class);
         }
     }
 

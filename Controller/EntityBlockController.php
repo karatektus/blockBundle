@@ -73,8 +73,23 @@ class EntityBlockController extends Controller
                 throw $this->createNotFoundException();
             }
 
+            $count = $this
+                ->getDoctrine()
+                ->getRepository(EntityBlock::class)
+                ->createQueryBuilder('eb')
+                ->select('COUNT(eb)')
+                ->join('eb.entityBlockType', 'type')
+                ->where('type.slug = :type')
+                ->setParameter('type', $type)
+                ->andWhere('eb.deleted = 0')
+                ->getQuery()
+                ->getSingleScalarResult();
+
             $entityBlock = new EntityBlock();
-            $entityBlock->setEntityBlockType($entityType);
+            $entityBlock
+                ->setEntityBlockType($entityType)
+                ->setCount($count + 1);
+
         } else {
             $entityBlock = $this->getDoctrine()->getRepository(EntityBlock::class)->createQueryBuilder('e')
                 ->where('e.id = :id')

@@ -29,16 +29,17 @@
                             <td class="text-right">
                                 <a href="{{ path("pluetzner_block_imageblock_edit_1", {"id":image.id}) }}"
                                    class="text-warning">{{ 'edit'|icon }}
-                                    Bearbeiten</a>
+                                    edit</a>
                                 <a href="{{ path("pluetzner_block_imageblock_delete", {"id":image.id}) }}"
-                                   class="text-danger">{{ 'trash'|icon }}
-                                    Löschen</a>
+                                   class="text-danger approvable"
+                                       data-text="Are you sure you want to delete {{ image.slug }}?">{{ 'trash'|icon }}
+                                    delete</a>
                             </td>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
-                <a class="btn btn-primary" href="{{ path("pluetzner_block_imageblock_edit") }}">+ Hinzufügen</a>
+                <a class="btn btn-primary" href="{{ path("pluetzner_block_imageblock_edit") }}">+ Add New</a>
                 <div class="navigation">
                     {{ knp_pagination_render(pagination) }}
                 </div>

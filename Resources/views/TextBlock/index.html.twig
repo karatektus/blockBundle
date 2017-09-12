@@ -47,14 +47,15 @@
                             <td class="text-right">
                                 {{ buttonBlock(textblock.slug, 'edit', 'edit') }}
                                 <a href="{{ path("pluetzner_block_textblock_delete", {"id":textblock.id}) }}"
-                                   class="text-danger">{{ 'trash'|icon }}
-                                    Löschen</a>
+                                   class="text-danger approvable"
+                                       data-text="Are you sure you want to delete {{ textblock.slug }}?">{{ 'trash'|icon }}
+                                    delete</a>
                             </td>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
-                <a class="btn btn-primary" href="{{ path("pluetzner_block_textblock_edit") }}">+ Hinzufügen</a>
+                <a class="btn btn-primary" href="{{ path("pluetzner_block_textblock_edit") }}">+ Add New</a>
                 <div class="navigation">
                     {{ knp_pagination_render(pagination) }}
                 </div>
