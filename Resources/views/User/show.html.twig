@@ -6,17 +6,10 @@
 
 {% block body %}
     <div class="row">
-        <div class="col-sm-8">
+        <div class="col-xs-12 col-sm-8">
             <div class="panel panel-info">
                 <div class="panel-heading">
                     {{ user.username }}
-                    <div class="btn-group pull-right">
-                        <a class="btn btn-circle btn-icon-only btn-default"
-                           href="{{ path("pluetzner_block_user_edit_1", {"id":user.id}) }}"
-                           class="text-warning">{{ 'edit'|icon }}
-                            Bearbeiten
-                        </a>
-                    </div>
                     <span class="clearfix"></span>
                 </div>
 

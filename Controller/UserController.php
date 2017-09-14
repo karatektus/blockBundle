@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -123,7 +124,6 @@ class UserController extends Controller
 
     /**
      * @param Request $request
-     * @param int $id
      *
      * @Route("/change-password")
      * @Template()
@@ -132,9 +132,7 @@ class UserController extends Controller
      */
     public function editPasswordAction(Request $request)
     {
-
-        $checker = $this->get('security.authorization_checker');
-        $user = $this->getDoctrine()->getRepository(User::class)->find(intval($this->getUser()->getId()));
+        $user = $this->getDoctrine()->getRepository(get_class($this->getUser()))->find(intval($this->getUser()->getId()));
 
         if (null === $user || false === $user->isEnabled()) {
             throw $this->createNotFoundException();
@@ -153,8 +151,8 @@ class UserController extends Controller
 
                 $manager->persist($user);
                 $manager->flush();
-
-                return $this->saved("admin_user_show_1");
+                $this->addFlash('success', 'Password change successful');
+                return $this->redirectToRoute("pluetzner_block_default_index");
             }
 
             $form->addError(new FormError("Der Benutzername existiert bereits"));

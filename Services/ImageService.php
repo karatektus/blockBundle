@@ -73,11 +73,16 @@ class ImageService
 
     /**
      * @param ImageBlock $imageblock
+     *
+     * @return boolean
      */
     public function saveImage($imageblock)
     {
         /** @var UploadedFile $fileRef */
         $fileRef = $imageblock->getUploadedFile();
+        if(null === $fileRef){
+            return false;
+        }
         $file = file_get_contents($fileRef->getPath() . "/" . $fileRef->getFilename());
         $file = base64_encode($file);
 
@@ -106,5 +111,6 @@ class ImageService
                 $res = unlink($fp); //delete file
             }
         }
+        return true;
     }
 }

@@ -21,13 +21,13 @@ class PasswordFormType extends AbstractType
 
         $builder->add("plainPassword", RepeatedType::class, [
             'type' => PasswordType::class,
-            'invalid_message' => 'Sie müssen zwei mal das Gleiche Passwort eingeben.',
+            'invalid_message' => 'Please enter the same password twice.',
             'options' => array('attr' => array('class' => 'password-field')),
             'required' => true,
-            'first_options' => array('label' => 'Passwort'),
-            'second_options' => array('label' => 'Passwort wiederholen'),
+            'first_options' => array('label' => 'Password'),
+            'second_options' => array('label' => 'Repeat'),
         ])
-            ->add("speichern", SubmitType::class);
+            ->add("save", SubmitType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)
