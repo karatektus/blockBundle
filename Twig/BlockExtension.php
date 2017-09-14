@@ -232,7 +232,7 @@ class BlockExtension extends \Twig_Extension
 
                 if (false === $exists) {
                     $blocks[] = ['name' => $oldslug];
-                    $type->setTextBlocks($blocks);
+                    $type->setStringBlocks($blocks);
                     $this->getDoctrine()->getManager()->persist($type);
                 }
             }
@@ -520,7 +520,7 @@ class BlockExtension extends \Twig_Extension
      * @param bool        $raw
      * @return string
      */
-    public function getOptionBlock($slug, $options, $default, $entityBlock = null, $raw = false)
+    public function getOptionBlock($slug, $options, $default, $helptext = "", $entityBlock = null, $raw = false)
     {
         if (null !== $entityBlock) {
             $oldslug = $slug;
@@ -542,7 +542,7 @@ class BlockExtension extends \Twig_Extension
 
                 if (false === $exists) {
                     $blocks[] = ['name' => $oldslug];
-                    $type->setTextBlocks($blocks);
+                    $type->setOptionBlocks($blocks);
                     $this->getDoctrine()->getManager()->persist($type);
                 }
             }
@@ -551,6 +551,7 @@ class BlockExtension extends \Twig_Extension
             $optionBlock
                 ->setEntityBlock($entityBlock)
                 ->setSlug($slug)
+                ->setTitle($helptext)
                 ->setOptions($options)
                 ->setValue($default);
 
@@ -559,6 +560,12 @@ class BlockExtension extends \Twig_Extension
         } else {
             if ($optionBlock->getOptions() !== $options) {
                 $optionBlock->setOptions($options);
+                $this->getDoctrine()->getManager()->persist($optionBlock);
+                $this->getDoctrine()->getManager()->flush();
+            }
+
+            if ($helptext !== "" && $optionBlock->getTitle() !== $helptext) {
+                $optionBlock->setTitle($helptext);
                 $this->getDoctrine()->getManager()->persist($optionBlock);
                 $this->getDoctrine()->getManager()->flush();
             }

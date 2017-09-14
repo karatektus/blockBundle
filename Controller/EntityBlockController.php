@@ -113,6 +113,13 @@ class EntityBlockController extends Controller
         if (true === $form->isSubmitted() && true === $form->isValid()) {
             $manager = $this->getDoctrine()->getManager();
             $manager->persist($entityBlock);
+
+            $imageblocks = $entityBlock->getImageBlocks();
+            foreach ($imageblocks as $imageblock) {
+                $imageService = $this->get('pluetzner_block.services.image_service');
+                $imageService->saveImage($imageblock);
+            }
+
             $manager->flush();
 
             return new Response("");

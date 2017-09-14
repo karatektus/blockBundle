@@ -101,37 +101,8 @@ class ImageBlockController extends Controller
 
         if (true === $form->isSubmitted() && true === $form->isValid()) {
 
-            /** @var UploadedFile $fileRef */
-            $fileRef = $imageblock->getUploadedFile();
-            $file = file_get_contents($fileRef->getPath() . "/" . $fileRef->getFilename());
-            $file = base64_encode($file);
-
-            $imageblock
-                ->setMimeType($fileRef->getMimeType())
-                ->setImage($file);
-
-
-            $manager = $this->getDoctrine()->getManager();
-            $manager->persist($imageblock);
-            $manager->flush();
-
-            $guesser = new MimeTypeExtensionGuesser();
-            $imageRoute = $this->get('router')->generate('pluetzner_block_image_show', [
-                'slug' => $imageblock->getSlug(),
-                'height' => 0,
-                'width' => 0,
-                '_type' => $guesser->guess($imageblock->getMimeType())
-
-            ]);
-
-            $dir = dirname(sprintf('%s/../web%s', $this->get('kernel')->getRootDir(), $imageRoute));
-            $files = scandir($dir);
-            foreach($files as $file){
-                $fp = sprintf('%s/%s', $dir, $file);
-                if(is_file($fp)) {
-                    $res = unlink($fp); //delete file
-                }
-            }
+            $imageService = $this->get('pluetzner_block.services.image_service');
+            $imageService->saveImage($imageblock);
 
             return new Response("");
         }

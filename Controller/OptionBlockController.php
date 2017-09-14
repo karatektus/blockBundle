@@ -99,7 +99,7 @@ class OptionBlockController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(OptionBlockFormType::class, $optionBlock, ['save_button' => false, 'choices' => $optionBlock->getOptions()]);
+        $form = $this->createForm(OptionBlockFormType::class, $optionBlock, ['save_button' => false]);
         $form->handleRequest($request);
         if (true === $form->isSubmitted() && true === $form->isValid()) {
             $manager = $this->getDoctrine()->getManager();

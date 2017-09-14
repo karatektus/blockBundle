@@ -28,7 +28,7 @@ class ImageBlockFormType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -42,7 +42,7 @@ class ImageBlockFormType extends AbstractType
 
         $builder->add("uploadedFile", FileType::class, [
             "label" => "Bild",
-            "constraints" => [new NotBlank(),
+            "constraints" => [
                 new File([
                     "mimeTypes" => [
                         "image/gif",
@@ -52,7 +52,8 @@ class ImageBlockFormType extends AbstractType
                     ],
                     "mimeTypesMessage" => "Bitte laden sie eine Bilddatei hoch.",
                     "maxSize" => "2M",
-                ])]
+                ]),
+            ],
         ]);
         if (true === $options['save_button']) {
             $builder->add('Speichern', SubmitType::class);

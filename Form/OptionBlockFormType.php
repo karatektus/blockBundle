@@ -10,12 +10,14 @@ namespace Pluetzner\BlockBundle\Form;
 
 
 use Pluetzner\BlockBundle\Entity\OptionBlock;
-use Simettric\DoctrineTranslatableFormBundle\Form\TranslatableTextType;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -27,23 +29,38 @@ class OptionBlockFormType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        if (true === $options['save_button']) {
+        $builder
+            ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($options) {
+                $this->createForm($event->getForm(), $event->getData(), $options['save_button']);
+            });
+
+    }
+
+    /**
+     * @param FormInterface $builder
+     * @param OptionBlock   $optionBlock
+     * @param boolean       $savebutton
+     */
+    private function createForm($builder, $optionBlock, $savebutton)
+    {
+        if (true === $savebutton) {
             $builder
                 ->add("slug", TextType::class, [
                     "label" => "Abkürzung:",
                     "required" => true
                 ]);
         }
-            $builder
-                ->add('value', ChoiceType::class, [
-                    'choices' => $options['choices']
-                ]);
+        $builder
+            ->add('value', ChoiceType::class, [
+                'label' => $optionBlock->getTitle(),
+                'choices' => $optionBlock->getOptions(),
+            ]);
 
-        if (true === $options['save_button']) {
+        if (true === $savebutton) {
             $builder->add('Speichern', SubmitType::class);
         }
     }
@@ -53,7 +70,6 @@ class OptionBlockFormType extends AbstractType
         $resolver->setDefaults([
             'data_class' => OptionBlock::class,
             'save_button' => false,
-            'choices' => [],
             'choices_as_values' => true,
         ]);
     }

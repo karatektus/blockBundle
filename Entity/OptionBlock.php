@@ -33,6 +33,12 @@ class OptionBlock
     private $slug;
 
     /**
+     * @var string
+     * @ORM\Column(name="title", type="string", length=255)
+     */
+    private $title;
+
+    /**
      * @var array
      *
      * @ORM\Column(name="options", type="array")
@@ -85,6 +91,24 @@ class OptionBlock
     public function getSlug()
     {
         return $this->slug;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     * @return OptionBlock
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+        return $this;
     }
 
     /**

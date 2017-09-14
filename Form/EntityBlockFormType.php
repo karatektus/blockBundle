@@ -9,7 +9,9 @@
 namespace Pluetzner\BlockBundle\Form;
 
 
+use Pluetzner\BlockBundle\Entity\EntityBlock;
 use Symfony\Component\Form\AbstractType;
+
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -53,12 +55,12 @@ class EntityBlockFormType extends AbstractType
                 'label' => false,
                 'entry_type' => ImageBlockFormType::class,
                 'entry_options' => ['label' => false],
-            ])/*
+            ])
             ->add('optionBlock', CollectionType::class, [
                 'label' => false,
                 'entry_type' => OptionBlockFormType::class,
                 'entry_options' => ['label' => false],
-            ])*/;
+            ]);
 
         if (true === $options['save_button']) {
             $builder->add('Speichern', SubmitType::class);

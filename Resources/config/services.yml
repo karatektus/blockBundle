@@ -49,3 +49,6 @@ services:
             - '@request_stack'
         tags:
             - { name: twig.extension }
+    pluetzner_block.services.image_service:
+        class: Pluetzner\BlockBundle\Services\ImageService
+        arguments: ['@doctrine', '@router', '%kernel.root_dir%']
