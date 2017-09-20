@@ -10,16 +10,43 @@
         }
     }
 
+    function page(currentwrap) {
+        var links = $('.panel-footer>.pagination a', currentwrap);
+        links.each(function (cnt) {
+            var link = $(this);
+            link.click(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    type: 'GET',
+                    url: link.attr('href'),
+                    data: {
+                        'type': $(currentwrap).data('type')
+                    },
+                    success: function (data) {
+                        $(currentwrap).html(data);
+                        plApprovable.init(currentwrap);
+                        blockBootBox.init(currentwrap);
+                        page(currentwrap);
+                    },
+                    dataType: 'html'
+                })
+            });
+        })
+    }
+
     tablewrapper.each(function () {
         var currentwrap = this;
         $.ajax({
             type: 'GET',
             url: '{{ path('pluetzner_block_entityblock_index_1') }}',
-            data: {'type': $(currentwrap).data('type')},
+            data: {
+                'type': $(currentwrap).data('type')
+            },
             success: function (data) {
                 $(currentwrap).html(data);
                 count++;
                 init();
+                page(currentwrap);
             },
             dataType: 'html'
         });

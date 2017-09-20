@@ -89,14 +89,14 @@ var blockBootBox = function () {
         /**
          * Init
          */
-        init: function () {
+        init: function (selector) {
             var _self = this;
-            var textblock = $('.textblock');
-            var stringblock = $('.stringblock');
-            var imageblock = $('.imageblock');
-            var buttonblock = $('.buttonblock');
-            var optionblock = $('.optionblock');
-            var addentity = $('.addEntityButtonBlock');
+            var textblock = $('.textblock', selector);
+            var stringblock = $('.stringblock', selector);
+            var imageblock = $('.imageblock', selector);
+            var buttonblock = $('.buttonblock', selector);
+            var optionblock = $('.optionblock', selector);
+            var addentity = $('.addEntityButtonBlock', selector);
 
             textblock.on('dblclick taphold', function () {
                 var currentBlock = this;

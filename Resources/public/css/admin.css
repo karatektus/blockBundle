@@ -23,3 +23,7 @@ table {
     padding-top: 50px;
     display: none;
 }
+
+.panel-footer .pagination {
+    margin: 0 !important;
+}

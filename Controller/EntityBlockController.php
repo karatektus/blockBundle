@@ -22,18 +22,20 @@ class EntityBlockController extends Controller
 
     /**
      * @param Request $request
+     * @param string  $_route
      * @param string  $type
      *
      * @return array
      *
      * @Route("/{type}")
      * @Route("/ajaxindex/raw")
+     *
      * @Template()
      */
     public function indexAction(Request $request, $_route, $type = null)
     {
         if (null === $type) {
-            $type = $request->get('type');
+            $type = $request->query->get('type');
         }
 
         if (null === $type) {
@@ -50,8 +52,11 @@ class EntityBlockController extends Controller
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
             $blocks,
-            $request->get('page', 1),
-            30
+            $request->query->get(sprintf('%sPage', $type), 1),
+            1,
+            [
+                'pageParameterName' => sprintf('%sPage', $type),
+            ]
         );
 
         $data = [

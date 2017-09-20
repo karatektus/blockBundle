@@ -5,10 +5,10 @@ var plApprovable = function () {
 
         /**
          * Init
-         * @param id
+         * @param selector
          */
-        init: function () {
-            this.load('.approvable');
+        init: function (selector) {
+            this.load($('.approvable', selector));
         },
         /**
          * Load
