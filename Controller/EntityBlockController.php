@@ -4,7 +4,6 @@ namespace Pluetzner\BlockBundle\Controller;
 
 use Pluetzner\BlockBundle\Entity\EntityBlock;
 use Pluetzner\BlockBundle\Entity\EntityBlockType;
-use Pluetzner\BlockBundle\Entity\TextBlock;
 use Pluetzner\BlockBundle\Form\EntityBlockFormType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -16,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Class EntityBlockController
  * @package Pluetzner\BlockBundle\Controller
  *
- * @Route("/admin/entityblocks/{type}")
+ * @Route("/admin/entityblocks")
  */
 class EntityBlockController extends Controller
 {
@@ -27,11 +26,19 @@ class EntityBlockController extends Controller
      *
      * @return array
      *
-     * @Route("")
+     * @Route("/{type}")
+     * @Route("/ajaxindex/raw")
      * @Template()
      */
-    public function indexAction(Request $request, $type)
+    public function indexAction(Request $request, $_route, $type = null)
     {
+        if (null === $type) {
+            $type = $request->get('type');
+        }
+
+        if (null === $type) {
+            throw  $this->createNotFoundException();
+        }
         $entityType = $this->getDoctrine()->getRepository(EntityBlockType::class)->findOneBy(['slug' => $type]);
 
         if (null === $entityType) {
@@ -47,10 +54,16 @@ class EntityBlockController extends Controller
             30
         );
 
-        return [
+        $data = [
             'type' => $entityType,
             'blocks' => $pagination,
         ];
+
+        if (false !== strpos($_route, '_1')) {
+            return $this->render('@PluetznerBlock/EntityBlock/raw.html.twig', $data);
+        }
+
+        return $data;
     }
 
     /**
@@ -60,7 +73,7 @@ class EntityBlockController extends Controller
      *
      * @return array|Response
      *
-     * @Route("/{id}/editAjax")
+     * @Route("/{type}/{id}/editAjax")
      *
      * @Template()
      */
@@ -135,7 +148,7 @@ class EntityBlockController extends Controller
      * @param string  $type
      * @param Request $request
      *
-     * @Route("/updateOrder")
+     * @Route("/{type}/updateOrder")
      *
      * @return Response
      */
@@ -161,13 +174,14 @@ class EntityBlockController extends Controller
     }
 
     /**
-     * @param int $id
+     * @param Request $request
+     * @param         $type
+     * @param int     $id
+     * @return Response
+     * @Route("/{type}/{id}/delete")
      *
-     * @Route("/{id}/delete")
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function deleteAction($type, $id = 0)
+    public function deleteAction(Request $request, $type, $id = 0)
     {
         $entityBlock = $this->getDoctrine()->getRepository(EntityBlock::class)->find(intval($id));
         if (null === $entityBlock || true === $entityBlock->isDeleted()) {
@@ -181,8 +195,8 @@ class EntityBlockController extends Controller
         $manager->persist($entityBlock);
         $manager->flush();
 
-        $this->get('session')->getFlashBag()->add('success', 'EntityBlock successfully deleted.');
+        $this->get('session')->getFlashBag()->add('success', sprintf('%s successfully deleted.', ucfirst($type)));
 
-        return $this->redirect($this->generateUrl('pluetzner_block_entityblock_index', ['type' => $type]));
+        return $this->redirect($request->headers->get('referer'));
     }
 }

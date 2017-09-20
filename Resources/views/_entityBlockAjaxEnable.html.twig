@@ -1,0 +1,29 @@
+<script type="text/javascript">
+    var tablewrapper = $('.entityblocktable');
+    var count = 0;
+
+    function init() {
+        if (tablewrapper.length === count) {
+            plsort();
+            blockBootBox.init();
+            plApprovable.init();
+        }
+    }
+
+    tablewrapper.each(function () {
+        var currentwrap = this;
+        $.ajax({
+            type: 'GET',
+            url: '{{ path('pluetzner_block_entityblock_index_1') }}',
+            data: {'type': $(currentwrap).data('type')},
+            success: function (data) {
+                $(currentwrap).html(data);
+                count++;
+                init();
+            },
+            dataType: 'html'
+        });
+    });
+
+
+</script>

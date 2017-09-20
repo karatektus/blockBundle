@@ -1,0 +1,51 @@
+<div class="panel panel-warning">
+    <div class="panel-heading">
+        Type: <strong>{{ type.slug }}</strong>
+    </div>
+
+    <div class="tablewrap">
+        <table id="entityBlockTable" data-url="{{ path('pluetzner_block_entityblock_updateorder', {'type': type.slug}) }}" class="table-striped table-hover table">
+            <thead>
+            <tr>
+                <th width="20%">Title</th>
+                <th width="60%">Content</th>
+                <th width="20%" class="text-right">Options</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for block in blocks %}
+                <tr>
+                    <td data-orderId="{{ block.orderId }}" data-slug="{{ block.slug }}">{{ block.title }}</td>
+                    <td>{{ block.stringBlocks|length }} x StringBlocks | {{ block.textBlocks|length }} x TextBlocks | {{ block.imageBlocks|length }} x ImageBlocks | {{ block.optionBlock|length }} x OptionBlocks</td>
+                    <td class="text-right">
+                        {{ buttonBlock(block.slug, 'edit', 'edit', true) }}
+                        <a class="text-danger approvable"
+                           data-text="Are you sure you want to delete {{ block.title }}?"
+                           href="{{ path('pluetzner_block_entityblock_delete', {'id': block.id, 'type': block.entityBlockType.slug}) }}"
+                        >
+                            <i class="fa fa-times"></i> delete
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="entityBlockTableOverlay">
+            <div class="circle-loader">
+                <div class="checkmark draw"></div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer">
+        <div class="navigation">
+            {{ knp_pagination_render(blocks) }}
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
