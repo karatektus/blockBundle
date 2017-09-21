@@ -8,7 +8,7 @@
             <thead>
             <tr>
                 <th width="20%">Title</th>
-                <th width="60%">Content</th>
+                <th class="hidden-xs hidden-sm" width="60%">Content</th>
                 <th width="20%" class="text-right">Options</th>
             </tr>
             </thead>
@@ -16,7 +16,7 @@
             {% for block in blocks %}
                 <tr>
                     <td data-orderId="{{ block.orderId }}" data-slug="{{ block.slug }}">{{ block.title }}</td>
-                    <td>{{ block.stringBlocks|length }} x StringBlocks | {{ block.textBlocks|length }} x TextBlocks | {{ block.imageBlocks|length }} x ImageBlocks | {{ block.optionBlock|length }} x OptionBlocks</td>
+                    <td class="hidden-xs hidden-sm" >{{ block.stringBlocks|length }} x StringBlocks | {{ block.textBlocks|length }} x TextBlocks | {{ block.imageBlocks|length }} x ImageBlocks | {{ block.optionBlock|length }} x OptionBlocks</td>
                     <td class="text-right">
                         {{ buttonBlock(block.slug, 'edit', 'Edit', true) }}
                         <a class="text-danger approvable"
