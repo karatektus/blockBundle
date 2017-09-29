@@ -16,17 +16,18 @@
     {% include "@PluetznerBlock/_layout/favicon.html.twig" %}
 
 
-
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet"
           type="text/css"/>
 
     <link href="{{ asset('bundles/pluetznerblock/fonts/font-awesome.min.css') }}" rel="stylesheet"
           type="text/css"/>
 
+    {% stylesheets '@PluetznerBlockBundle/Resources/public/css/*' filter='cssrewrite' %}
+    <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+
     {% block stylesheets %}
-        {% stylesheets '@PluetznerBlockBundle/Resources/public/css/*' filter='cssrewrite' %}
-        <link rel="stylesheet" href="{{ asset_url }}"/>
-        {% endstylesheets %}
+
     {% endblock %}
 
 
