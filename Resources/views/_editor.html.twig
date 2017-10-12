@@ -3,13 +3,15 @@
     {% include '@PMTool/module/nonblocking_styles.html.twig' with {
     assets: [
     asset('bundles/pluetznerblock/css/editor.css') ,
-    asset('bundles/pluetznerblock/css/simplemde.min.css')
+    asset('bundles/pluetznerblock/css/simplemde.min.css'),
+    asset('bundles/pluetznerblock/css/select2.min.css')
     ]
     } %}
 
     {% set js = [
     asset('bundles/pluetznerblock/js/bootbox.min.js'),
     asset('bundles/pluetznerblock/js/simplemde.min.js'),
+    asset('bundles/pluetznerblock/js/select2.min.js'),
     asset('bundles/pluetznerblock/js/editor.js'),
     ] %}
 

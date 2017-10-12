@@ -84,6 +84,7 @@ class EntityBlockController extends Controller
      */
     public function editAjaxAction(Request $request, $type, $id = 0)
     {
+        $locales = $this->getParameter('pl__block.configuration.locales_available');
         if (0 === intval($id)) {
             $entityType = $this->getDoctrine()->getRepository(EntityBlockType::class)->findOneBy(['slug' => $type]);
 
@@ -106,7 +107,8 @@ class EntityBlockController extends Controller
             $entityBlock = new EntityBlock();
             $entityBlock
                 ->setEntityBlockType($entityType)
-                ->setOrderId($count + 1);
+                ->setOrderId($count + 1)
+                ->setVisibleLanguages($locales);
 
         } else {
             $entityBlock = $this->getDoctrine()->getRepository(EntityBlock::class)->createQueryBuilder('e')
@@ -125,11 +127,16 @@ class EntityBlockController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(EntityBlockFormType::class, $entityBlock, ['save_button' => false]);
+
+        $oldLanguages = $entityBlock->getVisibleLanguages();
+        $form = $this->createForm(EntityBlockFormType::class, $entityBlock, ['save_button' => false, 'locales' => array_combine($locales, $locales)]);
         $form->handleRequest($request);
 
         if (true === $form->isSubmitted() && true === $form->isValid()) {
             $manager = $this->getDoctrine()->getManager();
+            if(0 === count($entityBlock->getVisibleLanguages())){
+                $entityBlock->setVisibleLanguages($oldLanguages);
+            }
             $manager->persist($entityBlock);
 
             $imageblocks = $entityBlock->getImageBlocks();
@@ -145,7 +152,7 @@ class EntityBlockController extends Controller
 
         return [
             'form' => $form->createView(),
-            'locales' => $this->getParameter('pl__block.configuration.locales_available')
+            'locales' => $locales,
         ];
     }
 

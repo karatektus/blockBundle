@@ -12,6 +12,7 @@ namespace Pluetzner\BlockBundle\Form;
 use Pluetzner\BlockBundle\Entity\EntityBlock;
 use Symfony\Component\Form\AbstractType;
 
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -60,6 +61,13 @@ class EntityBlockFormType extends AbstractType
                 'label' => false,
                 'entry_type' => OptionBlockFormType::class,
                 'entry_options' => ['label' => false],
+            ])
+            ->add('visibleLanguages', ChoiceType::class, [
+                'label' => 'Languages',
+                'attr' => ['class' => 'select2'],
+                'choices' => $options['locales'],
+                'multiple' => true,
+                'required' => true,
             ]);
 
         if (true === $options['save_button']) {
@@ -71,6 +79,7 @@ class EntityBlockFormType extends AbstractType
     {
         $resolver->setDefaults([
             'save_button' => true,
+            'locales' => [],
         ]);
     }
 

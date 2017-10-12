@@ -82,6 +82,7 @@ var blockBootBox = function () {
                         forceSync: true,
                         spellChecker: false
                     });
+                    $(".select2").select2();
                 });
             });
 

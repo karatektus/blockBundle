@@ -65,6 +65,8 @@ class BlockExtension extends \Twig_Extension
      * @param Router            $router
      * @param string            $rootdir
      * @param SecurityExtension $twig
+     * @param Paginator         $paginator
+     * @param RequestStack      $requestStack
      */
     public function __construct(RegistryInterface $doctrine, Router $router, $rootdir = '', SecurityExtension $twig, Paginator $paginator, RequestStack $requestStack)
     {
@@ -255,7 +257,6 @@ class BlockExtension extends \Twig_Extension
             $editData = sprintf('<string title="Slug: %s" class="%s stringblock" data-href="%s">', $stringBlock->getSlug(), $stringBlock->getSlug(), $route);
             $returnText = sprintf($returnText, $editData . '%s' . '</string>');
         }
-
         return sprintf($returnText, $stringBlock->getText());
     }
 
@@ -475,9 +476,11 @@ class BlockExtension extends \Twig_Extension
             ->join('b.entityBlockType', 'type')
             ->where('b.deleted = :showDeleted')
             ->andWhere('type.id = :typeId')
+            ->andWhere('b.visibleLanguages LIKE :locale')
             ->orderBy('b.' . $orderBy, $dire)
             ->setFirstResult($offset)
             ->setParameters([
+                'locale' => '%'.$this->getRequest()->getCurrentRequest()->get('_locale').'%',
                 'showDeleted' => false,
                 'typeId' => $blockType->getId(),
             ]);

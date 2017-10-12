@@ -70,6 +70,13 @@ class EntityBlock extends EntityBlockModel
     private $count;
 
     /**
+     * @var array
+     *
+     * @ORM\Column(name="visible_languages", type="simple_array")
+     */
+    private $visibleLanguages;
+
+    /**
      * @var ArrayCollection|StringBlock[]
      *
      * @ORM\OneToMany(targetEntity="Pluetzner\BlockBundle\Entity\StringBlock", mappedBy="entityBlock")
@@ -290,11 +297,28 @@ class EntityBlock extends EntityBlockModel
     }
 
     /**
+     * @return array
+     */
+    public function getVisibleLanguages()
+    {
+        return $this->visibleLanguages;
+    }
+
+    /**
+     * @param array $visibleLanguages
+     * @return EntityBlock
+     */
+    public function setVisibleLanguages($visibleLanguages)
+    {
+        $this->visibleLanguages = $visibleLanguages;
+        return $this;
+    }
+
+    /**
      * @ORM\PreFlush()
      */
     public function setOptionalFields()
     {
-
     }
 }
 
