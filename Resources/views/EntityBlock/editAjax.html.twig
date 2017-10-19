@@ -2,19 +2,23 @@
 {{ form_row(form.title) }}
 {{ form_row(form.published) }}
 <div>
-{{ form_row(form.visibleLanguages) }}
+    {{ form_row(form.visibleLanguages) }}
 </div>
 
 <ul class="nav nav-tabs">
     <li class="active">
         <a aria-controls="content-field-text-en" role="tab" data-toggle="tab" href="#content-field-text-texts">Texts</a>
     </li>
-    <li role="">
-        <a aria-controls="content-field-text-en" role="tab" data-toggle="tab" href="#content-field-text-images">Images</a>
-    </li>
-    <li role="">
-        <a aria-controls="content-field-text-en" role="tab" data-toggle="tab" href="#content-field-text-options">Options</a>
-    </li>
+    {% if form.imageBlocks|length > 0 %}
+        <li role="">
+            <a aria-controls="content-field-text-en" role="tab" data-toggle="tab" href="#content-field-text-images">Images</a>
+        </li>
+    {% endif %}
+    {% if form.optionBlock|length > 0 %}
+        <li role="">
+            <a aria-controls="content-field-text-en" role="tab" data-toggle="tab" href="#content-field-text-options">Options</a>
+        </li>
+    {% endif %}
 
 </ul>
 
