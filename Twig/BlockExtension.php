@@ -262,7 +262,7 @@ class BlockExtension extends \Twig_Extension
 
     /**
      * @param string           $slug
-     * @param int              $width
+     * @param int|string       $width
      * @param int              $height
      * @param EntityBlock|null $entityBlock
      * @param string           $classes
@@ -277,6 +277,18 @@ class BlockExtension extends \Twig_Extension
         }
 
         $imageBlock = $this->getDoctrine()->getRepository(ImageBlock::class)->findOneBy(['slug' => $slug]);
+
+        $widthString = '';
+        $heightString = '';
+        if(true === is_string($width)){
+            $widthString = $width;
+            $width = 0;
+        }
+
+        if(true === is_string($height)){
+            $heightString = $height;
+            $height = 0;
+        }
 
         if (null === $imageBlock) {
 
@@ -349,6 +361,15 @@ class BlockExtension extends \Twig_Extension
         if (0 < $height) {
             $h = sprintf(' height=%s', $height);
         }
+
+        if ('' !== $widthString) {
+             $w = sprintf(' width="%s"', $widthString);
+        }
+
+        if ('' !== $heightString) {
+             $w = sprintf(' height="%s"', $heightString);
+        }
+
         return sprintf('<img%s%s class="%s %s src="%s" alt="%s">', $w, $h, $classes, $editData, $imageRoute, $alt);
     }
 
@@ -480,7 +501,7 @@ class BlockExtension extends \Twig_Extension
             ->orderBy('b.' . $orderBy, $dire)
             ->setFirstResult($offset)
             ->setParameters([
-                'locale' => '%'.$this->getRequest()->getCurrentRequest()->get('_locale').'%',
+                'locale' => '%' . $this->getRequest()->getCurrentRequest()->get('_locale') . '%',
                 'showDeleted' => false,
                 'typeId' => $blockType->getId(),
             ]);

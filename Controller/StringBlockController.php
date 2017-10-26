@@ -136,6 +136,25 @@ class StringBlockController extends Controller
     }
 
     /**
+    public function exportXMLAction()
+    {
+        $rootNode = new \SimpleXMLElement( "<?xml version='1.0' encoding='UTF-8' standalone='yes'?><xml></xml>" );
+
+        $stringBlocks = $this->getDoctrine()->getRepository(StringBlock::class)->findBy(['deleted' => false]);
+
+        $em = $this->getDoctrine()->getManager();
+        foreach ($stringBlocks as $stringBlock) {
+            $stringNode = $rootNode->addChild('stringBlock');
+            $stringNode->addChild('slug', $stringBlock->getSlug());
+            foreach ($locales as $key => $locale) {
+                $stringBlock->setLocale($locale);
+                $em->refresh($stringBlock);
+                $sheet->setCellValueByColumnAndRow($key + 1, $rowKey + 2, $stringBlock->getText());
+            }
+        }
+    }
+**/
+    /**
      * @Route("/import")
      *
      * @Template()
