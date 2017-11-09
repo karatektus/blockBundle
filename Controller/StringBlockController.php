@@ -136,8 +136,19 @@ class StringBlockController extends Controller
     }
 
     /**
-    public function exportXMLAction()
+     * @return Response
+     *
+     * @Route("/exportXML")
+     * @Route("/exportXML/{locales}")
+     */
+    public function exportXMLAction($locales = null)
     {
+        if(null === $locales){
+            $locales = $this->getParameter('pl__block.configuration.locales_available');
+        } else {
+            $locales = explode('&', $locales);
+        }
+
         $rootNode = new \SimpleXMLElement( "<?xml version='1.0' encoding='UTF-8' standalone='yes'?><xml></xml>" );
 
         $stringBlocks = $this->getDoctrine()->getRepository(StringBlock::class)->findBy(['deleted' => false]);
@@ -146,14 +157,18 @@ class StringBlockController extends Controller
         foreach ($stringBlocks as $stringBlock) {
             $stringNode = $rootNode->addChild('stringBlock');
             $stringNode->addChild('slug', $stringBlock->getSlug());
-            foreach ($locales as $key => $locale) {
+            foreach ($locales as $locale) {
                 $stringBlock->setLocale($locale);
                 $em->refresh($stringBlock);
-                $sheet->setCellValueByColumnAndRow($key + 1, $rowKey + 2, $stringBlock->getText());
+                $stringNode->addChild($locale, $stringBlock->getText());
             }
         }
+        $response = new Response($rootNode->asXML());
+        $response->headers->set('Content-Type', 'xml');
+         $response->headers->set('Content-Disposition', sprintf('attachment; filename="stringBlockExport.xml"'));
+
+        return $response;
     }
-**/
     /**
      * @Route("/import")
      *

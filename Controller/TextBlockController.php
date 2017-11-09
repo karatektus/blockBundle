@@ -133,6 +133,41 @@ class TextBlockController extends Controller
     }
 
     /**
+     * @return Response
+     *
+     * @Route("/exportXML")
+     * @Route("/exportXML/{locales}")
+     */
+    public function exportXMLAction($locales = null)
+    {
+        if (null === $locales) {
+            $locales = $this->getParameter('pl__block.configuration.locales_available');
+        } else {
+            $locales = explode('&', $locales);
+        }
+
+        $rootNode = new \SimpleXMLElement("<?xml version='1.0' encoding='UTF-8' standalone='yes'?><xml></xml>");
+
+        $textBlocks = $this->getDoctrine()->getRepository(TextBlock::class)->findBy(['deleted' => false]);
+
+        $em = $this->getDoctrine()->getManager();
+        foreach ($textBlocks as $textBlock) {
+            $stringNode = $rootNode->addChild('stringBlock');
+            $stringNode->addChild('slug', $textBlock->getSlug());
+            foreach ($locales as $locale) {
+                $textBlock->setLocale($locale);
+                $em->refresh($textBlock);
+                $stringNode->addChild($locale, $textBlock->getText());
+            }
+        }
+        $response = new Response($rootNode->asXML());
+        $response->headers->set('Content-Type', 'xml');
+        $response->headers->set('Content-Disposition', sprintf('attachment; filename="textBlockExport.xml"'));
+
+        return $response;
+    }
+
+    /**
      * @Route("/import")
      *
      * @Template()
