@@ -129,25 +129,27 @@ class ImageService
      */
     public function resizeImage($src_img, $mimeType, $new_width, $new_height, $moveTo)
     {
+        //make sure everything is actually an int value
+        $new_width = intval($new_width);
+        $new_height = intval($new_height);
+
         $old_x = imageSX($src_img);
         $old_y = imageSY($src_img);
 
-        if (0 === intval($new_height)) {
-            $new_height = $old_y;
-        }
-        if (0 === intval($new_width)) {
-            $new_width = $old_x;
-        }
-
-        if ($old_x > $old_y) {
+        if ($new_width === 0 && $new_height == 0) {
             $thumb_w = $new_width;
-            $thumb_h = $old_y / $old_x * $new_width;
-        } elseif ($old_x < $old_y) {
-            $thumb_w = $old_x / $old_y * $new_height;
             $thumb_h = $new_height;
+        } elseif (($new_width === 0 && $new_height !== 0) || ($new_width !== 0 && $new_height === 0)) {
+            if ($new_width === 0 && $new_height !== 0) {
+                $thumb_w = $old_x / $old_y * $new_height;
+                $thumb_h = $new_height;
+            } else {
+                $thumb_w = $new_width;
+                $thumb_h = $old_y / $old_x * $new_width;
+            }
         } else {
-            $thumb_w = $new_width;
-            $thumb_h = $new_height;
+            $thumb_w = $old_x;
+            $thumb_h = $old_y;
         }
 
         $dst_img = ImageCreateTrueColor($thumb_w, $thumb_h);

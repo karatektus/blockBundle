@@ -40,6 +40,6 @@ class ImageController extends Controller
             }
         }
 
-        $this->redirect($request->getRequestUri());
+        return $this->redirect($request->getRequestUri());
     }
 }
