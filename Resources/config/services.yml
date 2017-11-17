@@ -47,6 +47,7 @@ services:
             - '@twig.extension.security'
             - '@knp_paginator'
             - '@request_stack'
+            - '@pluetzner_block.services.image_service'
         tags:
             - { name: twig.extension }
     pluetzner_block.services.image_service:

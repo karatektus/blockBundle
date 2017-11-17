@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeExtensionGuesser;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Constraints\Image;
 
 /**
  * Class ImageBlockController
@@ -43,7 +44,7 @@ class ImageBlockController extends Controller
 
     /**
      * @param Request $request
-     * @param int $id
+     * @param int     $id
      *
      * @Route("/create")
      * @Route("/{id}/edit")
@@ -82,7 +83,7 @@ class ImageBlockController extends Controller
 
     /**
      * @param Request $request
-     * @param int $id
+     * @param int     $id
      *
      * @Route("/{id}/editAjax")
      * @Template()
@@ -108,10 +109,43 @@ class ImageBlockController extends Controller
         }
 
 
-
         return [
             'form' => $form->createView(),
         ];
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     *
+     * @Route("/uploadAjax")
+     */
+    public function uploadAjax(Request $request)
+    {
+        $imageService = $this->get('pluetzner_block.services.image_service');
+
+        $imageRoutes = [];
+        foreach ($request->files as $file) {
+            $imageblock = new ImageBlock();
+
+            $now = new \DateTime();
+            $imageblock->setSlug(sprintf('ajaxupload_%s', $now->getTimestamp()));
+            $imageblock->setUploadedFile($file);
+            $imageService->saveImage($imageblock);
+
+            $guesser = new MimeTypeExtensionGuesser();
+            $imageRoute = $this->get('router')->generate('pluetzner_block_image_show', [
+                'slug' => $imageblock->getSlug(),
+                'height' => 0,
+                'width' => 0,
+                '_type' => $guesser->guess($imageblock->getMimeType())
+            ]);
+
+            $imageRoutes[] = $imageRoute;
+        }
+
+        return new Response(json_encode(['filename' => $imageRoutes[0]]));
     }
 
     /**

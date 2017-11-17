@@ -33,7 +33,7 @@ class TextBlockFormType extends AbstractTranslatableType
             $builder
                 ->add("slug", TextType::class, [
                     "label" => "Abkürzung:",
-                    "required" => true
+                    "required" => true,
                 ]);
         }
         $this->createTranslatableMapper($builder, $options)

@@ -15,6 +15,7 @@ use Pluetzner\BlockBundle\Entity\ImageBlock;
 use Pluetzner\BlockBundle\Entity\OptionBlock;
 use Pluetzner\BlockBundle\Entity\StringBlock;
 use Pluetzner\BlockBundle\Entity\TextBlock;
+use Pluetzner\BlockBundle\Services\ImageService;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Bridge\Twig\Extension\SecurityExtension;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
@@ -59,6 +60,11 @@ class BlockExtension extends \Twig_Extension
     private $request;
 
     /**
+     * @var ImageService
+     */
+    private $imageService;
+
+    /**
      * BlockExtension constructor.
      *
      * @param RegistryInterface $doctrine
@@ -68,7 +74,7 @@ class BlockExtension extends \Twig_Extension
      * @param Paginator         $paginator
      * @param RequestStack      $requestStack
      */
-    public function __construct(RegistryInterface $doctrine, Router $router, $rootdir = '', SecurityExtension $twig, Paginator $paginator, RequestStack $requestStack)
+    public function __construct(RegistryInterface $doctrine, Router $router, $rootdir = '', SecurityExtension $twig, Paginator $paginator, RequestStack $requestStack, ImageService $imageService)
     {
         $this->doctrine = $doctrine;
         $this->router = $router;
@@ -76,6 +82,7 @@ class BlockExtension extends \Twig_Extension
         $this->twig = $twig;
         $this->paginator = $paginator;
         $this->request = $requestStack;
+        $this->imageService = $imageService;
     }
 
     /**
@@ -125,6 +132,15 @@ class BlockExtension extends \Twig_Extension
     {
         return $this->request;
     }
+
+    /**
+     * @return ImageService
+     */
+    public function getImageService()
+    {
+        return $this->imageService;
+    }
+
 
     /**
      * @return array
@@ -339,7 +355,7 @@ class BlockExtension extends \Twig_Extension
                 }
                 file_put_contents($imagePath, base64_decode($imageBlock->getImage()));
             } else {
-                $this->resizeImage(imagecreatefromstring(base64_decode($imageBlock->getImage())), $imageBlock->getMimeType(), $width, $height, $imagePath);
+                $this->getImageService()->resizeImage(imagecreatefromstring(base64_decode($imageBlock->getImage())), $imageBlock->getMimeType(), $width, $height, $imagePath);
             }
         }
 
@@ -633,57 +649,5 @@ class BlockExtension extends \Twig_Extension
         return $entityBlock;
     }
 
-    /**
-     * Resize an image and copy it
-     *
-     * @param resource $src_img
-     * @param string   $mimeType
-     * @param int      $new_width
-     * @param int      $new_height
-     * @param string   $moveTo
-     */
-    private function resizeImage($src_img, $mimeType, $new_width, $new_height, $moveTo)
-    {
-        $old_x = imageSX($src_img);
-        $old_y = imageSY($src_img);
 
-        if (0 === $new_height) {
-            $new_height = $old_y;
-        }
-        if (0 === $new_width) {
-            $new_width = $old_x;
-        }
-
-        if ($old_x > $old_y) {
-            $thumb_w = $new_width;
-            $thumb_h = $old_y / $old_x * $new_width;
-        } elseif ($old_x < $old_y) {
-            $thumb_w = $old_x / $old_y * $new_height;
-            $thumb_h = $new_height;
-        } else {
-            $thumb_w = $new_width;
-            $thumb_h = $new_height;
-        }
-
-        $dst_img = ImageCreateTrueColor($thumb_w, $thumb_h);
-        imagealphablending($dst_img, false);
-        imagesavealpha($dst_img, true);
-        $transparent = imagecolorallocatealpha($dst_img, 255, 255, 255, 127);
-        imagefilledrectangle($dst_img, 0, 0, $old_x, $old_y, $transparent);
-        imagecopyresampled($dst_img, $src_img, 0, 0, 0, 0, $thumb_w, $thumb_h, $old_x, $old_y);
-        if (!file_exists(dirname($moveTo))) {
-            mkdir(dirname($moveTo), 0755, true);
-        }
-
-        if ($mimeType == 'image/png') {
-            $result = imagepng($dst_img, $moveTo, 0);
-        } elseif ($mimeType == 'image/jpg' || $mimeType == 'image/jpeg' || $mimeType == 'image/pjpeg') {
-            $result = imagejpeg($dst_img, $moveTo, 80);
-        } elseif ($mimeType == 'image/gif') {
-            $result = imagegif($dst_img, $moveTo);
-        }
-
-        imagedestroy($dst_img);
-        imagedestroy($src_img);
-    }
 }

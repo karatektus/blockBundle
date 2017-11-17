@@ -39,6 +39,7 @@ class ImageService
      * ImageService constructor.
      * @param Registry $doctrine
      * @param Router   $router
+     * @param string   $rootDir
      */
     public function __construct(Registry $doctrine, Router $router, $rootDir)
     {
@@ -80,7 +81,7 @@ class ImageService
     {
         /** @var UploadedFile $fileRef */
         $fileRef = $imageblock->getUploadedFile();
-        if(null === $fileRef){
+        if (null === $fileRef) {
             return false;
         }
         $file = file_get_contents($fileRef->getPath() . "/" . $fileRef->getFilename());
@@ -104,6 +105,9 @@ class ImageService
         ]);
 
         $dir = dirname(sprintf('%s/../web%s', $this->getRootDir(), $imageRoute));
+        if (false === file_exists($dir)) {
+            mkdir($dir);
+        }
         $files = scandir($dir);
         foreach ($files as $file) {
             $fp = sprintf('%s/%s', $dir, $file);
@@ -112,5 +116,59 @@ class ImageService
             }
         }
         return true;
+    }
+
+    /**
+     * Resize an image and copy it
+     *
+     * @param resource $src_img
+     * @param string   $mimeType
+     * @param int      $new_width
+     * @param int      $new_height
+     * @param string   $moveTo
+     */
+    public function resizeImage($src_img, $mimeType, $new_width, $new_height, $moveTo)
+    {
+        $old_x = imageSX($src_img);
+        $old_y = imageSY($src_img);
+
+        if (0 === intval($new_height)) {
+            $new_height = $old_y;
+        }
+        if (0 === intval($new_width)) {
+            $new_width = $old_x;
+        }
+
+        if ($old_x > $old_y) {
+            $thumb_w = $new_width;
+            $thumb_h = $old_y / $old_x * $new_width;
+        } elseif ($old_x < $old_y) {
+            $thumb_w = $old_x / $old_y * $new_height;
+            $thumb_h = $new_height;
+        } else {
+            $thumb_w = $new_width;
+            $thumb_h = $new_height;
+        }
+
+        $dst_img = ImageCreateTrueColor($thumb_w, $thumb_h);
+        imagealphablending($dst_img, false);
+        imagesavealpha($dst_img, true);
+        $transparent = imagecolorallocatealpha($dst_img, 255, 255, 255, 127);
+        imagefilledrectangle($dst_img, 0, 0, $old_x, $old_y, $transparent);
+        imagecopyresampled($dst_img, $src_img, 0, 0, 0, 0, $thumb_w, $thumb_h, $old_x, $old_y);
+        if (!file_exists(dirname($moveTo))) {
+            mkdir(dirname($moveTo), 0755, true);
+        }
+
+        if ($mimeType == 'image/png') {
+            $result = imagepng($dst_img, $moveTo, 0);
+        } elseif ($mimeType == 'image/jpg' || $mimeType == 'image/jpeg' || $mimeType == 'image/pjpeg') {
+            $result = imagejpeg($dst_img, $moveTo, 80);
+        } elseif ($mimeType == 'image/gif') {
+            $result = imagegif($dst_img, $moveTo);
+        }
+
+        imagedestroy($dst_img);
+        imagedestroy($src_img);
     }
 }

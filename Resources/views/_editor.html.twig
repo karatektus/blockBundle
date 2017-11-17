@@ -1,5 +1,6 @@
 {% if is_granted('ROLE_ADMIN') %}
 
+    <div class="hidden uploaduri" data-uri="{{ path('pluetzner_block_imageblock_uploadajax') }}"></div>
     {% include '@PMTool/module/nonblocking_styles.html.twig' with {
     assets: [
     asset('bundles/pluetznerblock/css/editor.css') ,
@@ -11,6 +12,8 @@
     {% set js = [
     asset('bundles/pluetznerblock/js/bootbox.min.js'),
     asset('bundles/pluetznerblock/js/simplemde.min.js'),
+    asset('bundles/pluetznerblock/js/inline-attachment.js'),
+    asset('bundles/pluetznerblock/js/codemirror.inline-attachment.js'),
     asset('bundles/pluetznerblock/js/select2.min.js'),
     asset('bundles/pluetznerblock/js/editor.js'),
     ] %}
