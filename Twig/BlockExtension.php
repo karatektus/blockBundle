@@ -166,8 +166,9 @@ class BlockExtension extends \Twig_Extension
 
 
     /**
-     * @param             $slug
+     * @param string      $slug
      * @param EntityBlock $entityBlock
+     * @param int         $length
      * @return string
      */
     public function getTextBlock($slug, $entityBlock = null, $length = 0)
@@ -219,12 +220,12 @@ class BlockExtension extends \Twig_Extension
             $text = substr($text, 0, $length) . '...';
         }
 
-        $parse = new \Parsedown();
+        $parse = new \ParsedownExtra();
         return sprintf($returnText, $parse->text($text));
     }
 
     /**
-     * @param             $slug
+     * @param string      $slug
      * @param EntityBlock $entityBlock
      * @return string
      */
@@ -296,12 +297,12 @@ class BlockExtension extends \Twig_Extension
 
         $widthString = '';
         $heightString = '';
-        if(true === is_string($width)){
+        if (true === is_string($width)) {
             $widthString = $width;
             $width = 0;
         }
 
-        if(true === is_string($height)){
+        if (true === is_string($height)) {
             $heightString = $height;
             $height = 0;
         }
@@ -379,11 +380,11 @@ class BlockExtension extends \Twig_Extension
         }
 
         if ('' !== $widthString) {
-             $w = sprintf(' width="%s"', $widthString);
+            $w = sprintf(' width="%s"', $widthString);
         }
 
         if ('' !== $heightString) {
-             $w = sprintf(' height="%s"', $heightString);
+            $w = sprintf(' height="%s"', $heightString);
         }
 
         return sprintf('<img%s%s class="%s %s src="%s" alt="%s">', $w, $h, $classes, $editData, $imageRoute, $alt);
@@ -469,9 +470,12 @@ class BlockExtension extends \Twig_Extension
     }
 
     /**
-     * @param string $type
-     * @param int    $limit
-     * @param int    $offset
+     * @param string      $type
+     * @param int         $limit
+     * @param int         $offset
+     * @param string|null $search
+     * @param int         $order
+     * @param int         $direction
      *
      * @return \Doctrine\Common\Collections\ArrayCollection|EntityBlock[]
      */
@@ -521,6 +525,11 @@ class BlockExtension extends \Twig_Extension
                 'showDeleted' => false,
                 'typeId' => $blockType->getId(),
             ]);
+
+        if (false === $this->getTwig()->isGranted('ROLE_ADMIN')) {
+            $qb->andWhere('b.published <= :now')
+                ->setParameter('now', new \DateTime());
+        }
 
         if (null !== $search) {
             $qb

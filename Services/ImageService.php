@@ -136,7 +136,7 @@ class ImageService
         $old_x = imageSX($src_img);
         $old_y = imageSY($src_img);
 
-        if ($new_width === 0 && $new_height == 0) {
+        if ($new_width === 0 && $new_height == 0 && $new_width !== 0 && $new_height !== 0) {
             $thumb_w = $new_width;
             $thumb_h = $new_height;
         } elseif (($new_width === 0 && $new_height !== 0) || ($new_width !== 0 && $new_height === 0)) {
