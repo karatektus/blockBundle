@@ -369,6 +369,7 @@ class TextBlockController extends Controller
             $manager->flush();
 
             $parseDown = new \ParsedownExtra();
+            $parseDown->setBreaksEnabled(true);
             return new Response($parseDown->text($textblock->getText()));
         }
 
