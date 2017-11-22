@@ -207,6 +207,11 @@ class BlockExtension extends \Twig_Extension
             $this->getDoctrine()->getManager()->persist($textblock);
             $this->getDoctrine()->getManager()->flush();
         }
+        if (true === $textblock->isDeleted()) {
+            $textblock->setDeleted(false);
+            $this->getDoctrine()->getManager()->persist($textblock);
+            $this->getDoctrine()->getManager()->flush();
+        }
 
         $returnText = '%s';
         if ($this->getTwig()->isGranted('ROLE_ADMIN')) {
@@ -221,6 +226,7 @@ class BlockExtension extends \Twig_Extension
         }
 
         $parse = new \ParsedownExtra();
+        $parse->setBreaksEnabled(true);
         return sprintf($returnText, $parse->text($text));
     }
 
@@ -265,7 +271,11 @@ class BlockExtension extends \Twig_Extension
             $this->getDoctrine()->getManager()->persist($stringBlock);
             $this->getDoctrine()->getManager()->flush();
         }
-
+        if (true === $stringBlock->isDeleted()) {
+            $stringBlock->setDeleted(false);
+            $this->getDoctrine()->getManager()->persist($stringBlock);
+            $this->getDoctrine()->getManager()->flush();
+        }
 
         $returnText = $wrap;
 
@@ -336,6 +346,12 @@ class BlockExtension extends \Twig_Extension
                 ->setImage(base64_encode($data))
                 ->setMimeType('image/gif');
 
+            $this->getDoctrine()->getManager()->persist($imageBlock);
+            $this->getDoctrine()->getManager()->flush();
+        }
+
+        if (true === $imageBlock->isDeleted()) {
+            $imageBlock->setDeleted(false);
             $this->getDoctrine()->getManager()->persist($imageBlock);
             $this->getDoctrine()->getManager()->flush();
         }
