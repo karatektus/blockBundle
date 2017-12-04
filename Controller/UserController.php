@@ -72,45 +72,47 @@ class UserController extends Controller
 
     /**
      * @param Request $request
-     * @param int $id
+     * @param int     $id
      *
      * @Route("/create")
      * @Route("/{id}/edit")
      * @Template()
      *
-     * @return array
+     * @return array|RedirectResponse
      */
     public function editAction(Request $request, $id = 0)
     {
         $checker = $this->get('security.authorization_checker');
+        $userclass = get_class($this->getUser());
         if (0 < $id) {
-            $user = $this->getDoctrine()->getRepository("PMCoreBundle:User")->find(intval($id));
+            $user = $this->getDoctrine()->getRepository($userclass)->find(intval($id));
             if (null === $user) {
                 throw $this->createNotFoundException();
             }
         } else {
-            $user = new User();
+            $user = new $userclass();
         }
 
         if (false === $checker->isGranted('ROLE_ADMIN')) {
             $user->setCompany($this->getUser()->getCompany());
         }
-
-        $form = $this->createForm(UserFormType::class, $user, ['user' => $this->getUser(), 'checker' => $checker]);
+        $allRoles = array_keys($this->getParameter('security.role_hierarchy.roles'));
+        $form = $this->createForm(UserFormType::class, $user, ['user' => $this->getUser(), 'checker' => $checker, 'roles' => $allRoles]);
         $form->handleRequest($request);
 
         if (true === $form->isValid()) {
             $check = null;
             if ($user->getId() === null) {
-                $check = $this->getDoctrine()->getRepository("PMCoreBundle:User")->findOneBy(['usernameCanonical' => $user->getUsernameCanonical()]);
+                $check = $this->getDoctrine()->getRepository($userclass)->findOneBy(['usernameCanonical' => $user->getUsernameCanonical()]);
             }
             if (null === $check) {
+                $user->setUsername($user->getEmail());
                 $manager = $this->getDoctrine()->getManager();
 
                 $manager->persist($user);
                 $manager->flush();
 
-                return $this->saved("admin_user_index");
+                return $this->redirectToRoute('pluetzner_block_user_index');
             }
 
             $form->addError(new FormError("Der Benutzername existiert bereits"));
@@ -128,7 +130,7 @@ class UserController extends Controller
      * @Route("/change-password")
      * @Template()
      *
-     * @return array
+     * @return array|RedirectResponse
      */
     public function editPasswordAction(Request $request)
     {
@@ -144,7 +146,7 @@ class UserController extends Controller
         if (true === $form->isSubmitted() && true === $form->isValid()) {
             $check = null;
             if ($user->getId() === null) {
-                $check = $this->getDoctrine()->getRepository("PMCoreBundle:User")->findOneBy(['usernameCanonical' => $user->getUsernameCanonical()]);
+                $check = $this->getDoctrine()->getRepository(get_class($this->getUser()))->findOneBy(['usernameCanonical' => $user->getUsernameCanonical()]);
             }
             if (null === $check) {
                 $manager = $this->getDoctrine()->getManager();
@@ -173,7 +175,7 @@ class UserController extends Controller
      */
     public function deleteAction($id)
     {
-        $user = $this->getDoctrine()->getRepository("PMCoreBundle:User")->find(intval($id));
+        $user = $this->getDoctrine()->getRepository(get_class($this->getUser()))->find(intval($id));
         if (null === $user || true === $user->isExpired()) {
             throw $this->createNotFoundException();
         }
@@ -185,7 +187,7 @@ class UserController extends Controller
         $manager->persist($user);
         $manager->flush();
 
-        return $this->saved("pm_core_default_index");
+        return $this->redirectToRoute("pluetzner_block_default_index");
     }
 
 }

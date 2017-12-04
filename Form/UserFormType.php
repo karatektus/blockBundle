@@ -36,14 +36,22 @@ class UserFormType extends AbstractType
         /** @var AuthorizationChecker $checker */
         $checker = $options['checker'];
 
-        $roles = array(
-            'User' => 'ROLE_USER',
-        );
-        if (true === $options['user']->hasRole("ROLE_ADMIN_DEVELOPER")) {
-            $roles['Admin'] = 'ROLE_ADMIN';
-            $roles['Entwickler'] = 'ROLE_ADMIN_DEVELOPER';
-        } elseif (true === $options['user']->hasRole("ROLE_ADMIN")) {
-            $roles['Admin'] = 'ROLE_ADMIN';
+        $originalRoles = $options['roles'];
+        $roles['User'] = 'ROLE_USER';
+
+        foreach ($originalRoles as $originalRole) {
+            if('ROLE_ADMIN' === $originalRole){
+                $roles['Admin'] = 'ROLE_ADMIN';
+            } else if('ROLE_ADMIN_DEVELOPER' === $originalRole){
+                $roles['Developer'] = 'ROLE_ADMIN_DEVELOPER';
+            } else {
+                $key = ucfirst(strtolower(str_replace('ROLE_', '', $originalRole)));
+                $roles[$key] = $originalRole;
+            }
+        }
+
+        if (true === $options['user']->hasRole("ROLE_ADMIN") && false === $options['user']->hasRole("ROLE_ADMIN_DEVELOPER")) {
+            unset($roles['Devloper']);
         }
 
         /** @var User $user */
@@ -82,7 +90,8 @@ class UserFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setRequired(array(
-            'checker'
+            'checker',
+            'roles',
         ));
 
         $resolver->setAllowedTypes('checker', AuthorizationChecker::class);

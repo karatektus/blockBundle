@@ -9,7 +9,6 @@
 namespace Pluetzner\BlockBundle\Model;
 
 use FOS\UserBundle\Model\User as BaseUser;
-use Pluetzner\BlockBundle\Entity\User;
 
 class UserModel extends BaseUser
 {
@@ -18,7 +17,7 @@ class UserModel extends BaseUser
      */
     public function getFunction()
     {
-        if (!$this instanceof User) {
+        if (!$this instanceof BaseUser) {
             throw new \LogicException();
         } else {
             if (true === $this->hasRole('ROLE_ADMIN_DEVELOPER')) {
@@ -30,6 +29,15 @@ class UserModel extends BaseUser
                     return 'ROLE_USER';
                 }
             }
+        }
+    }
+
+    public function setFunction($function)
+    {
+        if (!$this instanceof BaseUser) {
+            throw new \LogicException();
+        } else {
+            $this->setRoles([$function]);
         }
     }
 }
