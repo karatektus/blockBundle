@@ -1,39 +1,44 @@
 parameters:
     locale: en
-    locales: %pl__block.configuration.locales_available%
+    locales: "%pl__block.configuration.locales_available%"
 
 services:
     pluetzner_block.menu_builder:
         class: Pluetzner\BlockBundle\Menu\Builder
         arguments: ["@knp_menu.factory", '@security.authorization_checker', '@security.token_storage', '@doctrine', '@event_dispatcher']
+        
     pluetzner_block.menu_builder_view:
         class: Knp\Menu\MenuItem
         factory: ["@pluetzner_block.menu_builder", navMenu]
         arguments: ["@knp_menu.matcher"]
         tags:
           - { name: knp_menu.menu, alias: nav }
+
     pluetzner_block.menu_builder_main:
         class: Knp\Menu\MenuItem
         factory: ["@pluetzner_block.menu_builder", mainMenu]
         arguments: ["@knp_menu.matcher"]
         tags:
           - { name: knp_menu.menu, alias: main }
+
     pluetzner_block.form.text_block_form_type:
         class: Pluetzner\BlockBundle\Form\TextBlockFormType
         arguments: ['@sim_trans_form.mapper']
         calls:
-            - [ setRequiredLocale, [%locale%] ]
-            - [ setLocales, [%locales%] ]
+            - [ setRequiredLocale, ["%locale%"] ]
+            - [ setLocales, ["%locales%"] ]
         tags:
             - { name: form.type }
+
     pluetzner_block.form.string_block_form_type:
         class: Pluetzner\BlockBundle\Form\StringBlockFormType
         arguments: ['@sim_trans_form.mapper']
         calls:
-            - [ setRequiredLocale, [%locale%] ]
-            - [ setLocales, [%locales%] ]
+            - [ setRequiredLocale, ["%locale%"] ]
+            - [ setLocales, ["%locales%"] ]
         tags:
             - { name: form.type }
+
     pluetzner_block.twig.icon_extension:
         class: Pluetzner\BlockBundle\Twig\IconExtension
         tags:
