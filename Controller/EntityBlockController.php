@@ -53,7 +53,7 @@ class EntityBlockController extends Controller
         $pagination = $paginator->paginate(
             $blocks,
             $request->query->get(sprintf('%sPage', $type), 1),
-            10,
+            30,
             [
                 'pageParameterName' => sprintf('%sPage', $type),
             ]
